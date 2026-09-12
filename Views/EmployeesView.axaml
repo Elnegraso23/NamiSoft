@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="NominaPro.Views.EmployeesView">
+  <Grid RowDefinitions="Auto,*" RowSpacing="16">
+    <Border Classes="card">
+      <StackPanel Spacing="12">
+        <Grid ColumnDefinitions="*,180" ColumnSpacing="10">
+          <TextBox PlaceholderText="Buscar por nombre, número, puesto o departamento…"
+                   Text="{Binding SearchText, Mode=TwoWay}"/>
+          <ComboBox Grid.Column="1" ItemsSource="{Binding StatusFilters}" SelectedItem="{Binding SelectedStatusFilter, Mode=TwoWay}"/>
+        </Grid>
+        <WrapPanel Orientation="Horizontal" ItemSpacing="10" LineSpacing="10">
+          <Button Classes="primary" Content="Nuevo" Command="{Binding NewEmployeeCommand}"/>
+          <Button Classes="ghost" Content="Editar" Command="{Binding EditEmployeeCommand}"/>
+          <Button Classes="ghost" Content="Activar / desactivar" Command="{Binding ToggleActiveCommand}"/>
+          <Button Classes="ghost" Content="Sincronizar" Command="{Binding SyncPendingCommand}"/>
+          <Button Classes="danger" Content="Eliminar" Command="{Binding DeleteEmployeeCommand}"/>
+        </WrapPanel>
+      </StackPanel>
+    </Border>
+
+    <Border Grid.Row="1" Classes="card" Padding="0">
+      <Grid RowDefinitions="48,*">
+        <Border Background="#F9FAFB" BorderBrush="{DynamicResource BorderBrushSoft}" BorderThickness="0,0,0,1" Padding="16,0">
+          <Grid ColumnDefinitions="90,2*,1.2*,1.2*,120,110,110,75" VerticalAlignment="Center">
+            <TextBlock Text="Número" FontWeight="SemiBold"/>
+            <TextBlock Grid.Column="1" Text="Nombre" FontWeight="SemiBold"/>
+            <TextBlock Grid.Column="2" Text="Puesto" FontWeight="SemiBold"/>
+            <TextBlock Grid.Column="3" Text="Departamento" FontWeight="SemiBold"/>
+            <TextBlock Grid.Column="4" Text="$ / hora" FontWeight="SemiBold"/>
+            <TextBlock Grid.Column="5" Text="Turno" FontWeight="SemiBold"/>
+            <TextBlock Grid.Column="6" Text="Descanso" FontWeight="SemiBold"/>
+            <TextBlock Grid.Column="7" Text="Activo" FontWeight="SemiBold"/>
+          </Grid>
+        </Border>
+
+        <ListBox Grid.Row="1" ItemsSource="{Binding Employees}" SelectedItem="{Binding SelectedEmployee, Mode=TwoWay}" Background="Transparent" BorderThickness="0">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Border Padding="16,12" BorderBrush="#F0F1F3" BorderThickness="0,0,0,1">
+                <Grid ColumnDefinitions="90,2*,1.2*,1.2*,120,110,110,75" VerticalAlignment="Center">
+                  <TextBlock Text="{Binding NumeroEmpleado}"/>
+                  <TextBlock Grid.Column="1" Text="{Binding Nombre}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                  <TextBlock Grid.Column="2" Text="{Binding Puesto}" TextTrimming="CharacterEllipsis"/>
+                  <TextBlock Grid.Column="3" Text="{Binding Departamento}" TextTrimming="CharacterEllipsis"/>
+                  <TextBlock Grid.Column="4" Text="{Binding SalarioHora}"/>
+                  <TextBlock Grid.Column="5" Text="{Binding Turno}"/>
+                  <TextBlock Grid.Column="6" Text="{Binding Descanso}"/>
+                  <CheckBox Grid.Column="7" IsChecked="{Binding Activo}" IsEnabled="False" HorizontalAlignment="Center"/>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </Grid>
+    </Border>
+  </Grid>
+</UserControl>

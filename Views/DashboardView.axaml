@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="NominaPro.Views.DashboardView">
+  <ScrollViewer>
+    <StackPanel Spacing="20">
+      <StackPanel>
+        <TextBlock Text="Resumen del sistema" Classes="pageTitle"/>
+        <TextBlock Text="Vista rápida de empleados y checadas almacenadas." Classes="muted"/>
+      </StackPanel>
+
+      <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="14">
+        <Border Classes="card">
+          <StackPanel Spacing="8">
+            <TextBlock Text="Empleados activos" Classes="muted"/>
+            <TextBlock Text="{Binding EmpleadosActivos}" FontSize="34" FontWeight="Bold"/>
+          </StackPanel>
+        </Border>
+        <Border Grid.Column="1" Classes="card">
+          <StackPanel Spacing="8">
+            <TextBlock Text="Empleados totales" Classes="muted"/>
+            <TextBlock Text="{Binding EmpleadosTotales}" FontSize="34" FontWeight="Bold"/>
+          </StackPanel>
+        </Border>
+        <Border Grid.Column="2" Classes="card">
+          <StackPanel Spacing="8">
+            <TextBlock Text="Checadas" Classes="muted"/>
+            <TextBlock Text="{Binding Checadas}" FontSize="34" FontWeight="Bold"/>
+          </StackPanel>
+        </Border>
+        <Border Grid.Column="3" Classes="card">
+          <StackPanel Spacing="8">
+            <TextBlock Text="Pendientes" Classes="muted"/>
+            <TextBlock Text="{Binding Pendientes}" FontSize="34" FontWeight="Bold"/>
+          </StackPanel>
+        </Border>
+      </Grid>
+
+      <Border Classes="card">
+        <StackPanel Spacing="12">
+          <TextBlock Text="Flujo del programa" Classes="sectionTitle"/>
+          <TextBlock TextWrapping="Wrap" Classes="muted"
+                     Text="1. Registra empleados y sus horarios.  2. Importa el Excel de checadas.  3. El motor calcula horas y retardos.  4. Corrige checadas manualmente cuando sea necesario.  5. Calcula la nómina semanal y expórtala a Excel."/>
+        </StackPanel>
+      </Border>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

@@ -1,0 +1,68 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="NominaPro.Views.PayrollView">
+  <Grid RowDefinitions="Auto,Auto,*" RowSpacing="16">
+    <StackPanel>
+      <TextBlock Text="Nómina semanal" Classes="pageTitle"/>
+      <TextBlock Text="Calcula horas, retardos, propinas, prima dominical y total a pagar." Classes="muted"/>
+    </StackPanel>
+
+    <Border Grid.Row="1" Classes="card">
+      <Grid ColumnDefinitions="180,180,Auto,Auto,*,Auto" ColumnSpacing="12" VerticalAlignment="Center">
+        <StackPanel Spacing="5">
+          <TextBlock Text="Semana" Classes="muted" FontSize="12"/>
+          <DatePicker SelectedDate="{Binding WeekDate, Mode=TwoWay}"/>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Spacing="5">
+          <TextBlock Text="Propinas de la semana" Classes="muted" FontSize="12"/>
+          <NumericUpDown Value="{Binding Tips, Mode=TwoWay}" Minimum="0" Increment="50"/>
+        </StackPanel>
+        <Button Grid.Column="2" Classes="primary" Content="Calcular nómina" Command="{Binding CalculateCommand}" VerticalAlignment="Bottom"/>
+        <Button Grid.Column="3" Content="Exportar Excel" Command="{Binding ExportCommand}" IsEnabled="{Binding CanExport}" VerticalAlignment="Bottom"/>
+        <StackPanel Grid.Column="5" HorizontalAlignment="Right">
+          <TextBlock Text="TOTAL NÓMINA" Classes="muted" FontSize="11" HorizontalAlignment="Right"/>
+          <TextBlock Text="{Binding TotalPayroll, StringFormat='{}{0:C2}'}" FontSize="27" FontWeight="Bold" HorizontalAlignment="Right"/>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Border Grid.Row="2" Classes="card" Padding="0">
+      <ScrollViewer HorizontalScrollBarVisibility="Auto">
+        <Grid MinWidth="1050" RowDefinitions="48,*">
+          <Border Background="#F9FAFB" BorderBrush="{DynamicResource BorderBrushSoft}" BorderThickness="0,0,0,1" Padding="16,0">
+            <Grid ColumnDefinitions="2*,90,100,110,80,105,95,100,115" VerticalAlignment="Center">
+              <TextBlock Text="Empleado" FontWeight="SemiBold"/>
+              <TextBlock Grid.Column="1" Text="Horas" FontWeight="SemiBold"/>
+              <TextBlock Grid.Column="2" Text="$ / hora" FontWeight="SemiBold"/>
+              <TextBlock Grid.Column="3" Text="Sueldo" FontWeight="SemiBold"/>
+              <TextBlock Grid.Column="4" Text="Retardos" FontWeight="SemiBold"/>
+              <TextBlock Grid.Column="5" Text="Descuento" FontWeight="SemiBold"/>
+              <TextBlock Grid.Column="6" Text="Propinas" FontWeight="SemiBold"/>
+              <TextBlock Grid.Column="7" Text="Prima Dom." FontWeight="SemiBold"/>
+              <TextBlock Grid.Column="8" Text="Total" FontWeight="SemiBold"/>
+            </Grid>
+          </Border>
+          <ListBox Grid.Row="1" ItemsSource="{Binding Rows}" BorderThickness="0" Background="Transparent">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Border Padding="16,11" BorderBrush="#F0F1F3" BorderThickness="0,0,0,1">
+                  <Grid ColumnDefinitions="2*,90,100,110,80,105,95,100,115">
+                    <TextBlock Text="{Binding Nombre}" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Column="1" Text="{Binding HorasTrabajadas}"/>
+                    <TextBlock Grid.Column="2" Text="{Binding SalarioHora, StringFormat='{}{0:C2}'}"/>
+                    <TextBlock Grid.Column="3" Text="{Binding SueldoBase, StringFormat='{}{0:C2}'}"/>
+                    <TextBlock Grid.Column="4" Text="{Binding TotalRetardos}"/>
+                    <TextBlock Grid.Column="5" Text="{Binding DescuentoRetardos, StringFormat='{}{0:C2}'}"/>
+                    <TextBlock Grid.Column="6" Text="{Binding Propinas, StringFormat='{}{0:C2}'}"/>
+                    <TextBlock Grid.Column="7" Text="{Binding PrimaDominical, StringFormat='{}{0:C2}'}"/>
+                    <TextBlock Grid.Column="8" Text="{Binding TotalPagar, StringFormat='{}{0:C2}'}" FontWeight="Bold"/>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </Grid>
+      </ScrollViewer>
+    </Border>
+  </Grid>
+</UserControl>

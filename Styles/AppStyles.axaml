@@ -1,0 +1,160 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- Ventana base -->
+  <Style Selector="Window">
+    <Setter Property="FontFamily" Value="Inter"/>
+    <Setter Property="FontSize" Value="14"/>
+    <Setter Property="Background" Value="{DynamicResource PageBackgroundBrush}"/>
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+  </Style>
+
+  <!-- Botones táctiles: mínimo 48px de alto -->
+  <Style Selector="Button">
+    <Setter Property="MinHeight" Value="48"/>
+    <Setter Property="MinWidth" Value="48"/>
+    <Setter Property="Padding" Value="20,10"/>
+    <Setter Property="FontSize" Value="15"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="CornerRadius" Value="10"/>
+    <Setter Property="Background" Value="#E5E7EB"/>
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+  </Style>
+  <Style Selector="Button:pointerover">
+    <Setter Property="Background" Value="#D1D5DB"/>
+  </Style>
+  <Style Selector="Button:pressed">
+    <Setter Property="Background" Value="#9CA3AF"/>
+  </Style>
+  <Style Selector="Button:disabled">
+    <Setter Property="Opacity" Value="0.5"/>
+  </Style>
+
+  <Style Selector="Button.primary">
+    <Setter Property="Background" Value="{DynamicResource BrandBrush}"/>
+    <Setter Property="Foreground" Value="White"/>
+  </Style>
+  <Style Selector="Button.primary:pointerover">
+    <Setter Property="Background" Value="{DynamicResource BrandHoverBrush}"/>
+  </Style>
+  <Style Selector="Button.primary:pressed">
+    <Setter Property="Background" Value="#1E40AF"/>
+  </Style>
+
+  <Style Selector="Button.danger">
+    <Setter Property="Background" Value="{DynamicResource DangerBrush}"/>
+    <Setter Property="Foreground" Value="White"/>
+  </Style>
+  <Style Selector="Button.danger:pointerover">
+    <Setter Property="Background" Value="#991B1B"/>
+  </Style>
+  <Style Selector="Button.danger:pressed">
+    <Setter Property="Background" Value="#7F1D1D"/>
+  </Style>
+
+  <!-- Acción secundaria: fondo claro, borde visible -->
+  <Style Selector="Button.ghost">
+    <Setter Property="Background" Value="White"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushSoft}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+  </Style>
+  <Style Selector="Button.ghost:pointerover">
+    <Setter Property="Background" Value="#F3F4F6"/>
+  </Style>
+
+  <!-- Navegación lateral: ListBox con selección visible (sin hover-dependencia) -->
+  <Style Selector="ListBox.nav">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="0"/>
+  </Style>
+  <Style Selector="ListBox.nav ListBoxItem">
+    <Setter Property="MinHeight" Value="56"/>
+    <Setter Property="Padding" Value="16,12"/>
+    <Setter Property="CornerRadius" Value="10"/>
+    <Setter Property="Margin" Value="0,3"/>
+    <Setter Property="Foreground" Value="#E5E7EB"/>
+    <Setter Property="FontSize" Value="15"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+  </Style>
+  <Style Selector="ListBox.nav ListBoxItem:pointerover">
+    <Setter Property="Background" Value="#1F2937"/>
+  </Style>
+  <Style Selector="ListBox.nav ListBoxItem:selected">
+    <Setter Property="Background" Value="#2563EB"/>
+    <Setter Property="Foreground" Value="White"/>
+  </Style>
+  <Style Selector="ListBox.nav ListBoxItem:selected:pointerover">
+    <Setter Property="Background" Value="#1D4ED8"/>
+  </Style>
+
+  <!-- Tarjetas y tablas -->
+  <Style Selector="Border.card">
+    <Setter Property="Background" Value="{DynamicResource CardBrush}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushSoft}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="12"/>
+    <Setter Property="Padding" Value="20"/>
+  </Style>
+  <Style Selector="Border.tableHeader">
+    <Setter Property="Background" Value="#F9FAFB"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushSoft}"/>
+    <Setter Property="BorderThickness" Value="0,0,0,1"/>
+    <Setter Property="Padding" Value="16,0"/>
+  </Style>
+  <Style Selector="Border.tableRow">
+    <Setter Property="Padding" Value="16,12"/>
+    <Setter Property="BorderBrush" Value="#F0F1F3"/>
+    <Setter Property="BorderThickness" Value="0,0,0,1"/>
+  </Style>
+
+  <!-- Tipografía -->
+  <Style Selector="TextBlock.pageTitle">
+    <Setter Property="FontSize" Value="28"/>
+    <Setter Property="FontWeight" Value="Bold"/>
+  </Style>
+  <Style Selector="TextBlock.sectionTitle">
+    <Setter Property="FontSize" Value="18"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+  </Style>
+  <Style Selector="TextBlock.muted">
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+  </Style>
+  <Style Selector="TextBlock.fieldLabel">
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+    <Setter Property="FontSize" Value="13"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+  </Style>
+  <Style Selector="TextBlock.kpiValue">
+    <Setter Property="FontSize" Value="34"/>
+    <Setter Property="FontWeight" Value="Bold"/>
+  </Style>
+  <Style Selector="TextBlock.tableHeaderText">
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="FontSize" Value="13"/>
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+  </Style>
+
+  <!-- Campos táctiles -->
+  <Style Selector="TextBox, ComboBox, DatePicker, TimePicker, NumericUpDown">
+    <Setter Property="MinHeight" Value="48"/>
+    <Setter Property="FontSize" Value="15"/>
+    <Setter Property="CornerRadius" Value="8"/>
+  </Style>
+  <Style Selector="CheckBox">
+    <Setter Property="MinHeight" Value="48"/>
+    <Setter Property="FontSize" Value="15"/>
+  </Style>
+
+  <!-- Listas de datos -->
+  <Style Selector="ListBox.data">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="0"/>
+  </Style>
+  <Style Selector="ListBox.data ListBoxItem">
+    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    <Setter Property="Padding" Value="0"/>
+  </Style>
+  <Style Selector="ListBox.data ListBoxItem:selected">
+    <Setter Property="Background" Value="#EFF6FF"/>
+  </Style>
+</Styles>

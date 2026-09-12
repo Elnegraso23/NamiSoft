@@ -1,0 +1,64 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="NominaPro.Views.ManualScheduleView">
+  <Grid RowDefinitions="Auto,Auto,*" RowSpacing="16">
+    <StackPanel>
+      <TextBlock Text="Horario manual" Classes="pageTitle"/>
+      <TextBlock Text="Consulta una semana y corrige manualmente horas de entrada o salida." Classes="muted"/>
+    </StackPanel>
+
+    <Border Grid.Row="1" Classes="card">
+      <Grid ColumnDefinitions="2*,180,Auto,Auto" ColumnSpacing="12" VerticalAlignment="Bottom">
+        <StackPanel Spacing="5">
+          <TextBlock Text="Empleado" Classes="muted" FontSize="12"/>
+          <ComboBox ItemsSource="{Binding Employees}" SelectedItem="{Binding SelectedEmployee, Mode=TwoWay}">
+            <ComboBox.ItemTemplate>
+              <DataTemplate><TextBlock Text="{Binding NombreCompleto}"/></DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Spacing="5">
+          <TextBlock Text="Semana" Classes="muted" FontSize="12"/>
+          <DatePicker SelectedDate="{Binding WeekDate, Mode=TwoWay}"/>
+        </StackPanel>
+        <Button Grid.Column="2" Content="Buscar" Command="{Binding LoadCommand}"/>
+        <Button Grid.Column="3" Classes="primary" Content="Guardar cambios" Command="{Binding SaveCommand}"/>
+      </Grid>
+    </Border>
+
+    <Border Grid.Row="2" Classes="card" Padding="0">
+      <ScrollViewer HorizontalScrollBarVisibility="Auto">
+        <Grid MinWidth="900" RowDefinitions="48,*">
+          <Border Background="#F9FAFB" BorderBrush="{DynamicResource BorderBrushSoft}" BorderThickness="0,0,0,1" Padding="16,0">
+            <Grid ColumnDefinitions="130,130,130,150,120,100,100" VerticalAlignment="Center">
+              <TextBlock Text="Fecha" FontWeight="SemiBold"/>
+              <TextBlock Grid.Column="1" Text="Entrada" FontWeight="SemiBold"/>
+              <TextBlock Grid.Column="2" Text="Salida" FontWeight="SemiBold"/>
+              <TextBlock Grid.Column="3" Text="Horas trabajadas" FontWeight="SemiBold"/>
+              <TextBlock Grid.Column="4" Text="Retardo (min)" FontWeight="SemiBold"/>
+              <TextBlock Grid.Column="5" Text="Retardo" FontWeight="SemiBold"/>
+              <TextBlock Grid.Column="6" Text="Modificado" FontWeight="SemiBold"/>
+            </Grid>
+          </Border>
+          <ListBox Grid.Row="1" ItemsSource="{Binding Rows}" BorderThickness="0" Background="Transparent">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Border Padding="16,8" BorderBrush="#F0F1F3" BorderThickness="0,0,0,1">
+                  <Grid ColumnDefinitions="130,130,130,150,120,100,100" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Fecha, StringFormat='{}{0:dd/MM/yyyy}'}"/>
+                    <TextBox Grid.Column="1" Text="{Binding Entrada, Mode=TwoWay}" PlaceholderText="HH:mm" Margin="0,0,10,0"/>
+                    <TextBox Grid.Column="2" Text="{Binding Salida, Mode=TwoWay}" PlaceholderText="HH:mm" Margin="0,0,10,0"/>
+                    <TextBlock Grid.Column="3" Text="{Binding HorasTrabajadas}"/>
+                    <TextBlock Grid.Column="4" Text="{Binding RetardoMinutos}"/>
+                    <CheckBox Grid.Column="5" IsChecked="{Binding TieneRetardo}" IsEnabled="False"/>
+                    <CheckBox Grid.Column="6" IsChecked="{Binding Modificado}" IsEnabled="False"/>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </Grid>
+      </ScrollViewer>
+    </Border>
+  </Grid>
+</UserControl>

@@ -1,20 +1,17 @@
-using NominaPro.Datos;
+using Avalonia;
+using System;
 
-namespace NominaPro
+namespace NominaPro;
+
+internal static class Program
 {
-    internal static class Program
-    {
-        [STAThread]
-        static void Main()
-        {
-            ApplicationConfiguration.Initialize();
+    [STAThread]
+    public static void Main(string[] args) => BuildAvaloniaApp()
+        .StartWithClassicDesktopLifetime(args);
 
-            using (var db = new NominaContext())
-            {
-                db.Database.EnsureCreated();
-            }
-
-            Application.Run(new FrmPrincipal());
-        }
-    }
+    public static AppBuilder BuildAvaloniaApp() =>
+        AppBuilder.Configure<App>()
+            .UsePlatformDetect()
+            .WithInterFont()
+            .LogToTrace();
 }

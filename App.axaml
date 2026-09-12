@@ -1,0 +1,28 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:NominaPro"
+             x:Class="NominaPro.App"
+             RequestedThemeVariant="Light">
+  <Application.DataTemplates>
+    <local:ViewLocator />
+  </Application.DataTemplates>
+
+  <Application.Resources>
+    <SolidColorBrush x:Key="BrandBrush">#2563EB</SolidColorBrush>
+    <SolidColorBrush x:Key="BrandHoverBrush">#1D4ED8</SolidColorBrush>
+    <SolidColorBrush x:Key="SidebarBrush">#111827</SolidColorBrush>
+    <SolidColorBrush x:Key="SidebarMutedBrush">#9CA3AF</SolidColorBrush>
+    <SolidColorBrush x:Key="PageBackgroundBrush">#F3F4F6</SolidColorBrush>
+    <SolidColorBrush x:Key="CardBrush">#FFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="BorderBrushSoft">#E5E7EB</SolidColorBrush>
+    <SolidColorBrush x:Key="TextPrimaryBrush">#111827</SolidColorBrush>
+    <SolidColorBrush x:Key="TextSecondaryBrush">#6B7280</SolidColorBrush>
+    <SolidColorBrush x:Key="SuccessBrush">#15803D</SolidColorBrush>
+    <SolidColorBrush x:Key="DangerBrush">#B91C1C</SolidColorBrush>
+  </Application.Resources>
+
+  <Application.Styles>
+    <FluentTheme />
+    <StyleInclude Source="avares://NominaPro/Styles/AppStyles.axaml" />
+  </Application.Styles>
+</Application>

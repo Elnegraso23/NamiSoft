@@ -1,0 +1,78 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="NominaPro.Views.EmployeeEditorWindow"
+        Title="{Binding WindowTitle}"
+        Width="720" Height="660"
+        MinWidth="640" MinHeight="600"
+        WindowStartupLocation="CenterOwner">
+  <Grid RowDefinitions="Auto,*,Auto" Background="{DynamicResource PageBackgroundBrush}">
+    <Border Background="White" BorderBrush="{DynamicResource BorderBrushSoft}" BorderThickness="0,0,0,1" Padding="24,18">
+      <StackPanel>
+        <TextBlock Text="{Binding WindowTitle}" FontSize="23" FontWeight="Bold"/>
+        <TextBlock Text="Datos generales y horario del empleado" Classes="muted"/>
+      </StackPanel>
+    </Border>
+
+    <ScrollViewer Grid.Row="1" Margin="24">
+      <Border Classes="card">
+        <StackPanel Spacing="16">
+          <Grid ColumnDefinitions="*,*" ColumnSpacing="14">
+            <StackPanel Spacing="5">
+              <TextBlock Text="Número de empleado" Classes="muted" FontSize="12"/>
+              <TextBox Text="{Binding NumeroEmpleado, Mode=TwoWay}"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Spacing="5">
+              <TextBlock Text="Nombre" Classes="muted" FontSize="12"/>
+              <TextBox Text="{Binding Nombre, Mode=TwoWay}"/>
+            </StackPanel>
+          </Grid>
+
+          <Grid ColumnDefinitions="*,*" ColumnSpacing="14">
+            <StackPanel Spacing="5">
+              <TextBlock Text="Puesto" Classes="muted" FontSize="12"/>
+              <TextBox Text="{Binding Puesto, Mode=TwoWay}"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Spacing="5">
+              <TextBlock Text="Departamento" Classes="muted" FontSize="12"/>
+              <TextBox Text="{Binding Departamento, Mode=TwoWay}"/>
+            </StackPanel>
+          </Grid>
+
+          <Grid ColumnDefinitions="*,*,*" ColumnSpacing="14">
+            <StackPanel Spacing="5">
+              <TextBlock Text="Salario por hora" Classes="muted" FontSize="12"/>
+              <NumericUpDown Value="{Binding SalarioHora, Mode=TwoWay}" Minimum="0" Increment="1"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Spacing="5">
+              <TextBlock Text="Turno" Classes="muted" FontSize="12"/>
+              <ComboBox ItemsSource="{Binding Shifts}" SelectedItem="{Binding SelectedShift, Mode=TwoWay}"/>
+            </StackPanel>
+            <StackPanel Grid.Column="2" Spacing="5">
+              <TextBlock Text="Descanso" Classes="muted" FontSize="12"/>
+              <ComboBox ItemsSource="{Binding DaysOff}" SelectedItem="{Binding SelectedDayOff, Mode=TwoWay}"/>
+            </StackPanel>
+          </Grid>
+
+          <Border Background="#EFF6FF" Padding="14" CornerRadius="8" IsVisible="{Binding IsPersonalized}">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+              <StackPanel>
+                <TextBlock Text="Horario personalizado" FontWeight="SemiBold" Foreground="#1D4ED8"/>
+                <TextBlock Text="{Binding ScheduleSummary}" Foreground="#3B82F6" FontSize="12"/>
+              </StackPanel>
+              <Button Grid.Column="1" Content="Configurar horario" Command="{Binding EditScheduleCommand}"/>
+            </Grid>
+          </Border>
+
+          <CheckBox Content="Empleado activo" IsChecked="{Binding Activo, Mode=TwoWay}"/>
+        </StackPanel>
+      </Border>
+    </ScrollViewer>
+
+    <Border Grid.Row="2" Background="White" BorderBrush="{DynamicResource BorderBrushSoft}" BorderThickness="0,1,0,0" Padding="24,14">
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+        <Button Content="Cancelar" Click="OnCancelClick" MinWidth="110"/>
+        <Button Classes="primary" Content="{Binding SaveText}" Click="OnSaveClick" MinWidth="160"/>
+      </StackPanel>
+    </Border>
+  </Grid>
+</Window>

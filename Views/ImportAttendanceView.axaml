@@ -1,0 +1,50 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="NominaPro.Views.ImportAttendanceView">
+  <Grid RowDefinitions="Auto,Auto,*" RowSpacing="16">
+    <StackPanel>
+      <TextBlock Text="Importar checadas" Classes="pageTitle"/>
+      <TextBlock Text="Selecciona el reporte de asistencia en Excel. Se muestra una vista previa antes de guardarlo." Classes="muted"/>
+    </StackPanel>
+
+    <Border Grid.Row="1" Classes="card">
+      <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
+        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+          <TextBox Text="{Binding FilePath}" IsReadOnly="True" PlaceholderText="Ningún archivo seleccionado"/>
+          <Button Grid.Column="1" Classes="ghost" Content="Seleccionar .xlsx" Command="{Binding SelectFileCommand}"/>
+          <Button Grid.Column="2" Classes="primary" Content="Importar" Command="{Binding ImportCommand}" IsEnabled="{Binding CanImport}"/>
+        </Grid>
+        <TextBlock Grid.Row="1" Text="{Binding Status}" Classes="muted" TextWrapping="Wrap"/>
+      </Grid>
+    </Border>
+
+    <Border Grid.Row="2" Classes="card" Padding="0">
+      <Grid RowDefinitions="48,*">
+        <Border Background="#F9FAFB" BorderBrush="{DynamicResource BorderBrushSoft}" BorderThickness="0,0,0,1" Padding="16,0">
+          <Grid ColumnDefinitions="110,2*,130,130,130" VerticalAlignment="Center">
+            <TextBlock Text="Número" FontWeight="SemiBold"/>
+            <TextBlock Grid.Column="1" Text="Nombre" FontWeight="SemiBold"/>
+            <TextBlock Grid.Column="2" Text="Fecha" FontWeight="SemiBold"/>
+            <TextBlock Grid.Column="3" Text="Entrada" FontWeight="SemiBold"/>
+            <TextBlock Grid.Column="4" Text="Salida" FontWeight="SemiBold"/>
+          </Grid>
+        </Border>
+        <ListBox Grid.Row="1" ItemsSource="{Binding Preview}" BorderThickness="0" Background="Transparent">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Border Padding="16,10" BorderBrush="#F0F1F3" BorderThickness="0,0,0,1">
+                <Grid ColumnDefinitions="110,2*,130,130,130">
+                  <TextBlock Text="{Binding NumeroEmpleado}"/>
+                  <TextBlock Grid.Column="1" Text="{Binding Nombre}"/>
+                  <TextBlock Grid.Column="2" Text="{Binding Fecha, StringFormat='{}{0:dd/MM/yyyy}'}"/>
+                  <TextBlock Grid.Column="3" Text="{Binding PrimeraChecada}"/>
+                  <TextBlock Grid.Column="4" Text="{Binding UltimaChecada}"/>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </Grid>
+    </Border>
+  </Grid>
+</UserControl>

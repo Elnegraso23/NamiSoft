@@ -1,0 +1,47 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="NominaPro.Views.ScheduleEditorWindow"
+        Title="Horario personalizado"
+        Width="620" Height="590"
+        WindowStartupLocation="CenterOwner">
+  <Grid RowDefinitions="Auto,*,Auto" Background="{DynamicResource PageBackgroundBrush}">
+    <Border Background="White" BorderBrush="{DynamicResource BorderBrushSoft}" BorderThickness="0,0,0,1" Padding="24,18">
+      <StackPanel>
+        <TextBlock Text="Horario personalizado" FontSize="22" FontWeight="Bold"/>
+        <TextBlock Text="Captura entrada y salida en formato HH:mm." Classes="muted"/>
+      </StackPanel>
+    </Border>
+
+    <Border Grid.Row="1" Classes="card" Margin="24" Padding="0">
+      <Grid RowDefinitions="46,*">
+        <Border Background="#F9FAFB" BorderBrush="{DynamicResource BorderBrushSoft}" BorderThickness="0,0,0,1" Padding="16,0">
+          <Grid ColumnDefinitions="2*,*,*" VerticalAlignment="Center">
+            <TextBlock Text="Día" FontWeight="SemiBold"/>
+            <TextBlock Grid.Column="1" Text="Entrada" FontWeight="SemiBold"/>
+            <TextBlock Grid.Column="2" Text="Salida" FontWeight="SemiBold"/>
+          </Grid>
+        </Border>
+        <ListBox Grid.Row="1" ItemsSource="{Binding Days}" BorderThickness="0" Background="Transparent">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Border Padding="16,8" BorderBrush="#F0F1F3" BorderThickness="0,0,0,1">
+                <Grid ColumnDefinitions="2*,*,*" ColumnSpacing="10" VerticalAlignment="Center">
+                  <TextBlock Text="{Binding Day}" FontWeight="SemiBold"/>
+                  <TextBox Grid.Column="1" Text="{Binding Entry, Mode=TwoWay}" PlaceholderText="07:00"/>
+                  <TextBox Grid.Column="2" Text="{Binding Exit, Mode=TwoWay}" PlaceholderText="17:00"/>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </Grid>
+    </Border>
+
+    <Border Grid.Row="2" Background="White" BorderBrush="{DynamicResource BorderBrushSoft}" BorderThickness="0,1,0,0" Padding="24,14">
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+        <Button Content="Cancelar" Click="OnCancelClick"/>
+        <Button Classes="primary" Content="Usar horario" Click="OnSaveClick"/>
+      </StackPanel>
+    </Border>
+  </Grid>
+</Window>

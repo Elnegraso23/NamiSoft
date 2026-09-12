@@ -1,0 +1,77 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="NominaPro.Views.SettingsView">
+  <ScrollViewer>
+    <StackPanel Spacing="16" MaxWidth="900" HorizontalAlignment="Left">
+      <StackPanel>
+        <TextBlock Text="Configuración" Classes="pageTitle"/>
+        <TextBlock Text="Reglas que usa el motor para calcular retardos, turnos y prima dominical." Classes="muted"/>
+      </StackPanel>
+
+      <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+        <Border Classes="card">
+          <StackPanel Spacing="14">
+            <TextBlock Text="Turno mañana" Classes="sectionTitle"/>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+              <StackPanel Spacing="5">
+                <TextBlock Text="Entrada" Classes="muted" FontSize="12"/>
+                <TimePicker SelectedTime="{Binding MorningEntry, Mode=TwoWay}" ClockIdentifier="24HourClock"/>
+              </StackPanel>
+              <StackPanel Grid.Column="1" Spacing="5">
+                <TextBlock Text="Salida" Classes="muted" FontSize="12"/>
+                <TimePicker SelectedTime="{Binding MorningExit, Mode=TwoWay}" ClockIdentifier="24HourClock"/>
+              </StackPanel>
+            </Grid>
+            <StackPanel Spacing="5">
+              <TextBlock Text="Tolerancia en minutos" Classes="muted" FontSize="12"/>
+              <NumericUpDown Value="{Binding MorningTolerance, Mode=TwoWay}" Minimum="0" Maximum="180"/>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
+        <Border Grid.Column="1" Classes="card">
+          <StackPanel Spacing="14">
+            <TextBlock Text="Turno tarde" Classes="sectionTitle"/>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+              <StackPanel Spacing="5">
+                <TextBlock Text="Entrada" Classes="muted" FontSize="12"/>
+                <TimePicker SelectedTime="{Binding AfternoonEntry, Mode=TwoWay}" ClockIdentifier="24HourClock"/>
+              </StackPanel>
+              <StackPanel Grid.Column="1" Spacing="5">
+                <TextBlock Text="Salida" Classes="muted" FontSize="12"/>
+                <TimePicker SelectedTime="{Binding AfternoonExit, Mode=TwoWay}" ClockIdentifier="24HourClock"/>
+              </StackPanel>
+            </Grid>
+            <StackPanel Spacing="5">
+              <TextBlock Text="Tolerancia en minutos" Classes="muted" FontSize="12"/>
+              <NumericUpDown Value="{Binding AfternoonTolerance, Mode=TwoWay}" Minimum="0" Maximum="180"/>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+      </Grid>
+
+      <Border Classes="card">
+        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="16">
+          <StackPanel Spacing="5">
+            <TextBlock Text="Cada cuántos retardos" Classes="muted" FontSize="12"/>
+            <NumericUpDown Value="{Binding EveryLateCount, Mode=TwoWay}" Minimum="1" Maximum="50"/>
+          </StackPanel>
+          <StackPanel Grid.Column="1" Spacing="5">
+            <TextBlock Text="Descuento (minutos)" Classes="muted" FontSize="12"/>
+            <NumericUpDown Value="{Binding LateDiscountMinutes, Mode=TwoWay}" Minimum="0" Maximum="600"/>
+          </StackPanel>
+          <StackPanel Grid.Column="2" Spacing="5">
+            <TextBlock Text="Prima dominical (%)" Classes="muted" FontSize="12"/>
+            <NumericUpDown Value="{Binding SundayPremiumPercent, Mode=TwoWay}" Minimum="0" Maximum="100"/>
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <Border Classes="card">
+        <CheckBox Content="Aplicar prima dominical" IsChecked="{Binding ApplySundayPremium, Mode=TwoWay}"/>
+      </Border>
+
+      <Button Classes="primary" Content="Guardar configuración" Command="{Binding SaveCommand}" HorizontalAlignment="Left" MinWidth="220"/>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>
