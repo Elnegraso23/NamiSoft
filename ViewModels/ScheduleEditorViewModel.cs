@@ -1,8 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using NominaPro.Modelos;
+using NamiSoft.Modelos;
 using System.Collections.ObjectModel;
 
-namespace NominaPro.ViewModels;
+namespace NamiSoft.ViewModels;
 
 public partial class ScheduleDayViewModel : ViewModelBase
 {

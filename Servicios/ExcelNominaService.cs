@@ -1,9 +1,9 @@
 ﻿using ClosedXML.Excel;
-using NominaPro.Modelos;
+using NamiSoft.Modelos;
 using System;
 using System.Collections.Generic;
 
-namespace NominaPro.Servicios
+namespace NamiSoft.Servicios
 {
     /// Servicio encargado de generar y exportar la nómina semanal
     /// en formato Microsoft Excel (.xlsx).

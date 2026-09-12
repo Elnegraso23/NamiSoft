@@ -1,6 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="NominaPro.Views.EmployeesView">
+             x:Class="NamiSoft.Views.EmployeesView">
   <Grid RowDefinitions="Auto,*" RowSpacing="16">
     <Border Classes="card">
       <StackPanel Spacing="12">

@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using ClosedXML.Excel;
 using System.Data;
-using NominaPro.Modelos;
+using NamiSoft.Modelos;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace NominaPro.Utilidades
+namespace NamiSoft.Utilidades
 {
     public class ExcelHelper
     {

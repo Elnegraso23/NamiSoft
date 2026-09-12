@@ -1,4 +1,4 @@
-# Licencias de terceros — NominaPro
+# Licencias de terceros — NamiSoft
 
 Todo el stack debe poder usarse gratuitamente en un producto comercial.
 Antes de agregar una dependencia nueva: comprobar su licencia, justificar
@@ -35,4 +35,4 @@ por qué es necesaria y preferir controles estándar de Avalonia.
   `SQLitePCLRaw.lib.e_sqlite3 2.1.6`, vía EF Core 8.0.11). Pendiente:
   subir a `Microsoft.EntityFrameworkCore.Sqlite` 10.x cuando haya
   ventana de pruebas con datos reales, y revalidar el motor de nómina.
-- `Nomina.db` (SQLite) no tiene restricción de licencia para distribución.
+- `NamiSoft.db` (antes `Nomina.db`, se migra sola) (SQLite) no tiene restricción de licencia para distribución.

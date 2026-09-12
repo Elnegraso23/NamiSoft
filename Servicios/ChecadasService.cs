@@ -1,8 +1,8 @@
-﻿using NominaPro.Datos;
-using NominaPro.Enumeraciones;
-using NominaPro.Modelos;
+﻿using NamiSoft.Datos;
+using NamiSoft.Enumeraciones;
+using NamiSoft.Modelos;
 
-namespace NominaPro.Servicios;
+namespace NamiSoft.Servicios;
 
 public sealed record EstadoDia(ChecadaEmpleado? Checada)
 {

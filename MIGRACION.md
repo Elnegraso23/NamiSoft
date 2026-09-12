@@ -79,7 +79,7 @@ Los servicios se conservaron. Solo cambió la presentación y los diálogos de a
 
 El motor de cálculo de nómina y la interpretación del Excel no se reescribieron. El objetivo fue cambiar el framework de UI sin alterar las reglas del negocio.
 
-Antes de reemplazar la versión WinForms en producción, compara ambos programas con la misma copia de `Nomina.db` y el mismo archivo de checadas.
+Antes de reemplazar la versión WinForms en producción, compara ambos programas con la misma copia de `NamiSoft.db` (antes `Nomina.db`, se migra sola) y el mismo archivo de checadas.
 
 ## 6. Cambios aplicados (2026-09-12)
 
@@ -133,7 +133,7 @@ datos de aplicación, backups automáticos, pruebas de `MotorNomina`.
 
 1. Compilar y ejecutar en Pop!_OS.
 2. Corregir cualquier incompatibilidad puntual del SDK/paquetes.
-3. Hacer una copia de `Nomina.db` real y comparar resultados de nómina WinForms vs Avalonia.
+3. Hacer una copia de `NamiSoft.db` (antes `Nomina.db`, se migra sola) real y comparar resultados de nómina WinForms vs Avalonia.
 4. Terminar el diseño visual final.
 5. Añadir pruebas automáticas para `MotorNomina` y `NominaService`.
 6. Cambiar la ubicación de la base de datos a una ruta de datos de aplicación antes de distribuir instaladores.

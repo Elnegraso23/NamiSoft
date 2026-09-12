@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NominaPro.Modelos;
+using NamiSoft.Modelos;
 
-namespace NominaPro.Datos;
+namespace NamiSoft.Datos;
 
 public class NominaContext : DbContext
 {

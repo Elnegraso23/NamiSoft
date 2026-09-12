@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NominaPro.Modelos;
-using NominaPro.Datos;
-using NominaPro.Enumeraciones;
+using NamiSoft.Modelos;
+using NamiSoft.Datos;
+using NamiSoft.Enumeraciones;
 
-namespace NominaPro.Servicios
+namespace NamiSoft.Servicios
 {
     internal class MotorNomina
     {

@@ -1,11 +1,11 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using NominaPro.Enumeraciones;
-using NominaPro.Modelos;
-using NominaPro.Servicios;
-using NominaPro.UI;
+using NamiSoft.Enumeraciones;
+using NamiSoft.Modelos;
+using NamiSoft.Servicios;
+using NamiSoft.UI;
 
-namespace NominaPro.ViewModels;
+namespace NamiSoft.ViewModels;
 
 public partial class EmployeeEditorViewModel : ViewModelBase
 {

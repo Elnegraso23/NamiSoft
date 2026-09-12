@@ -1,3 +1,3 @@
 using Avalonia.Controls;
-namespace NominaPro.Views;
+namespace NamiSoft.Views;
 public partial class ImportAttendanceView : UserControl { public ImportAttendanceView() => InitializeComponent(); }

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
-using NominaPro.Datos;
-using NominaPro.Modelos;
+using NamiSoft.Datos;
+using NamiSoft.Modelos;
 
-namespace NominaPro.Servicios
+namespace NamiSoft.Servicios
 {
     public class SincronizarChecadasPendientesService
     {

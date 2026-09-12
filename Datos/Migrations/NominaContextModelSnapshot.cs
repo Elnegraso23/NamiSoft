@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 #nullable disable
 
-namespace NominaPro.Datos.Migrations;
+namespace NamiSoft.Datos.Migrations;
 
 [DbContext(typeof(NominaContext))]
 public partial class NominaContextModelSnapshot : ModelSnapshot
@@ -13,7 +13,7 @@ public partial class NominaContextModelSnapshot : ModelSnapshot
 #pragma warning disable 612, 618
         modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
 
-        modelBuilder.Entity("NominaPro.Modelos.ChecadaEmpleado", b =>
+        modelBuilder.Entity("NamiSoft.Modelos.ChecadaEmpleado", b =>
         {
             b.Property<int>("Id").ValueGeneratedOnAdd().HasColumnType("INTEGER");
             b.Property<bool>("TieneRetardo").HasColumnType("INTEGER");
@@ -35,7 +35,7 @@ public partial class NominaContextModelSnapshot : ModelSnapshot
             b.ToTable("Checadas");
         });
 
-        modelBuilder.Entity("NominaPro.Modelos.ChecadaPendiente", b =>
+        modelBuilder.Entity("NamiSoft.Modelos.ChecadaPendiente", b =>
         {
             b.Property<int>("Id").ValueGeneratedOnAdd().HasColumnType("INTEGER");
             b.Property<TimeSpan?>("UltimaChecada").HasColumnType("TEXT");
@@ -49,7 +49,7 @@ public partial class NominaContextModelSnapshot : ModelSnapshot
             b.ToTable("ChecadasPendientes");
         });
 
-        modelBuilder.Entity("NominaPro.Modelos.ConfiguracionSistema", b =>
+        modelBuilder.Entity("NamiSoft.Modelos.ConfiguracionSistema", b =>
         {
             b.Property<int>("Id").ValueGeneratedOnAdd().HasColumnType("INTEGER");
             b.Property<TimeSpan>("SalidaTarde").HasColumnType("TEXT");
@@ -66,7 +66,7 @@ public partial class NominaContextModelSnapshot : ModelSnapshot
             b.ToTable("ConfiguracionSistema");
         });
 
-        modelBuilder.Entity("NominaPro.Modelos.Empleado", b =>
+        modelBuilder.Entity("NamiSoft.Modelos.Empleado", b =>
         {
             b.Property<int>("Id").ValueGeneratedOnAdd().HasColumnType("INTEGER");
             b.Property<string>("Turno").IsRequired().HasMaxLength(32).HasColumnType("TEXT");
@@ -83,7 +83,7 @@ public partial class NominaContextModelSnapshot : ModelSnapshot
             b.ToTable("Empleados");
         });
 
-        modelBuilder.Entity("NominaPro.Modelos.HorarioEmpleado", b =>
+        modelBuilder.Entity("NamiSoft.Modelos.HorarioEmpleado", b =>
         {
             b.Property<int>("Id").ValueGeneratedOnAdd().HasColumnType("INTEGER");
             b.Property<string>("NumeroEmpleado").IsRequired().HasMaxLength(32).HasColumnType("TEXT");

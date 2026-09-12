@@ -1,7 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="NominaPro.Views.MainWindow"
-        Title="NominaPro"
+        x:Class="NamiSoft.Views.MainWindow"
+        Title="NamiSoft"
         Width="1280" Height="800"
         MinWidth="1000" MinHeight="650"
         WindowStartupLocation="CenterScreen">
@@ -9,7 +9,7 @@
     <Border Background="{DynamicResource SidebarBrush}" Padding="18,22">
       <Grid RowDefinitions="Auto,Auto,*,Auto">
         <StackPanel Spacing="3">
-          <TextBlock Text="NOMINAPRO" Foreground="White" FontSize="24" FontWeight="Bold"/>
+          <TextBlock Text="NAMISOFT" Foreground="White" FontSize="24" FontWeight="Bold"/>
           <TextBlock Text="Control de asistencia y nómina" Foreground="{DynamicResource SidebarMutedBrush}" FontSize="12"/>
         </StackPanel>
 

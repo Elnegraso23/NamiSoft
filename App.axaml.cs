@@ -2,12 +2,12 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.EntityFrameworkCore;
-using NominaPro.Datos;
-using NominaPro.UI;
-using NominaPro.ViewModels;
-using NominaPro.Views;
+using NamiSoft.Datos;
+using NamiSoft.UI;
+using NamiSoft.ViewModels;
+using NamiSoft.Views;
 
-namespace NominaPro;
+namespace NamiSoft;
 
 public partial class App : Application
 {

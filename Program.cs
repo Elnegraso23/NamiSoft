@@ -1,7 +1,7 @@
 using Avalonia;
 using System;
 
-namespace NominaPro;
+namespace NamiSoft;
 
 internal static class Program
 {

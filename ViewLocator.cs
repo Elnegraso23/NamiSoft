@@ -1,9 +1,9 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using NominaPro.ViewModels;
+using NamiSoft.ViewModels;
 using System;
 
-namespace NominaPro;
+namespace NamiSoft;
 
 public sealed class ViewLocator : IDataTemplate
 {

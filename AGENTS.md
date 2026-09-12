@@ -1,6 +1,6 @@
 # Reglas para OpenCode / agentes
 
-Este repositorio es la migración de NominaPro a Avalonia.
+Este repositorio es la migración de NamiSoft a Avalonia.
 
 ## Stack obligatorio
 

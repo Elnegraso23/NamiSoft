@@ -1,4 +1,4 @@
-# NominaPro · migración a Avalonia
+# NamiSoft · migración a Avalonia
 
 Esta carpeta contiene una migración funcional de la aplicación original **C# + WinForms** a **C# + .NET 10 + Avalonia 12 + MVVM**.
 
@@ -19,7 +19,7 @@ Se conservaron y reutilizan las capas que no dependían de WinForms:
 
 La interfaz `Form + Designer.cs + DataGridView + MessageBox + FileDialog` fue reemplazada por Avalonia.
 
-## Qué hace NominaPro
+## Qué hace NamiSoft
 
 1. **Empleados**: alta, edición, activación/desactivación y eliminación.
 2. **Horarios**: turnos mañana/tarde y horario personalizado por día.
@@ -28,12 +28,12 @@ La interfaz `Form + Designer.cs + DataGridView + MessageBox + FileDialog` fue re
 5. **Corrección manual**: permite ajustar entrada/salida de checadas existentes.
 6. **Nómina semanal**: calcula sueldo, descuentos, propinas, prima dominical y total.
 7. **Excel**: exporta la nómina semanal a `.xlsx` con ClosedXML.
-8. **SQLite**: persiste empleados, checadas, horarios y configuración en `Nomina.db`.
+8. **SQLite**: persiste empleados, checadas, horarios y configuración en `NamiSoft.db` (antes `Nomina.db`, se migra sola).
 
 ## Nueva estructura
 
 ```text
-NominaPro-Avalonia/
+NamiSoft-Avalonia/
 ├── Datos/                 Entity Framework Core + SQLite
 ├── Enumeraciones/         Enumeraciones del dominio
 ├── Modelos/               Entidades y DTOs originales
@@ -45,7 +45,7 @@ NominaPro-Avalonia/
 ├── Styles/                Estilos globales
 ├── App.axaml
 ├── Program.cs
-└── NominaPro.csproj
+└── NamiSoft.csproj
 ```
 
 ## Requisitos
@@ -87,7 +87,7 @@ En Windows PowerShell puedes usar:
 ## Ejecutar en Linux
 
 ```bash
-cd NominaPro-Avalonia
+cd NamiSoft-Avalonia
 dotnet restore
 dotnet run
 ```
@@ -105,12 +105,12 @@ Los archivos visuales están en `Views/*.axaml`. Guarda cambios y vuelve a ejecu
 Con .NET 10 SDK instalado:
 
 ```powershell
-cd C:\ruta\NominaPro-Avalonia
+cd C:\ruta\NamiSoft-Avalonia
 dotnet restore
 dotnet run
 ```
 
-También puedes abrir `NominaPro.csproj` en Visual Studio, Rider, VS Code o Zed.
+También puedes abrir `NamiSoft.csproj` en Visual Studio, Rider, VS Code o Zed.
 
 ## Publicar
 
@@ -130,13 +130,16 @@ Los archivos aparecen dentro de `bin/Release/net10.0/<runtime>/publish/`.
 
 ## Base de datos existente
 
-El contexto mantiene el nombre original:
+El archivo local se llama:
 
 ```text
-Nomina.db
+NamiSoft.db
 ```
 
-Si ya tienes una base real de la versión WinForms, **haz una copia de seguridad primero**. Para probar la migración con datos existentes, copia `Nomina.db` al directorio desde el que ejecutas la aplicación.
+Si vienes de la versión anterior (`Nomina.db`), la aplicación la detecta
+y la copia automáticamente a `NamiSoft.db` en el primer arranque.
+
+Si ya tienes una base real de la versión WinForms, **haz una copia de seguridad primero**. Para probar la migración con datos existentes, copia `NamiSoft.db` (antes `Nomina.db`, se migra sola) al directorio desde el que ejecutas la aplicación.
 
 No borres tu proyecto WinForms hasta haber comparado todos los resultados de nómina con datos reales.
 

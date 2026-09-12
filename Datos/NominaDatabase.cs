@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace NominaPro.Datos;
+namespace NamiSoft.Datos;
 
 /// <summary>
 /// Único punto de acceso a la base de datos. Ninguna otra capa conoce
@@ -13,7 +13,9 @@ public static class NominaDatabase
     /// Ruta actual: archivo local junto al ejecutable (una sola terminal, offline).
     /// Futuro: mover a carpeta de datos de aplicación copiando el archivo existente.
     /// </summary>
-    public static string DatabasePath { get; set; } = "Nomina.db";
+    public static string DatabasePath { get; set; } = "NamiSoft.db";
+
+    private const string LegacyDatabasePath = "Nomina.db";
 
     public static string ConnectionString => $"Data Source={DatabasePath}";
 
@@ -31,6 +33,28 @@ public static class NominaDatabase
         db.Database.EnsureCreated();
     }
 
+    /// <summary>
+    /// Migra el archivo de la versión anterior. Hace checkpoint del WAL antes
+    /// de copiar para no perder los datos aún no consolidados en el .db.
+    /// </summary>
+    private static void CopiarBaseAnterior()
+    {
+        try
+        {
+            using var legacy = new Microsoft.Data.Sqlite.SqliteConnection(
+                $"Data Source={LegacyDatabasePath}");
+            legacy.Open();
+            using var checkpoint = legacy.CreateCommand();
+            checkpoint.CommandText = "PRAGMA wal_checkpoint(TRUNCATE);";
+            checkpoint.ExecuteNonQuery();
+        }
+        catch
+        {
+            // Si no se puede consolidar, se intenta la copia directa.
+        }
+
+        File.Copy(LegacyDatabasePath, DatabasePath, overwrite: false);
+    }
     private const string InitialMigrationId = "20260101000000_InitialCreate";
     private const string AuditMigrationId = "20260912120000_ChecadaOrigenAuditoria";
     private const string ProductVersion = "8.0.11";
@@ -42,6 +66,9 @@ public static class NominaDatabase
     /// </summary>
     public static void EnsureMigrated()
     {
+        if (!File.Exists(DatabasePath) && File.Exists(LegacyDatabasePath))
+            CopiarBaseAnterior();
+
         using var db = CreateContext();
         var connection = db.Database.GetDbConnection();
         connection.Open();

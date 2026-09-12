@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace NominaPro.UI;
+namespace NamiSoft.UI;
 
 public partial class AppState : ObservableObject
 {

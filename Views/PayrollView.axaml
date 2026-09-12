@@ -1,6 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="NominaPro.Views.PayrollView">
+             x:Class="NamiSoft.Views.PayrollView">
   <Grid RowDefinitions="Auto,Auto,*" RowSpacing="16">
     <StackPanel>
       <TextBlock Text="Nómina semanal" Classes="pageTitle"/>

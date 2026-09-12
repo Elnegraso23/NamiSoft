@@ -1,10 +1,10 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using NominaPro.Modelos;
-using NominaPro.Servicios;
-using NominaPro.UI;
+using NamiSoft.Modelos;
+using NamiSoft.Servicios;
+using NamiSoft.UI;
 
-namespace NominaPro.ViewModels;
+namespace NamiSoft.ViewModels;
 
 public partial class SettingsViewModel : ViewModelBase, IRefreshable
 {

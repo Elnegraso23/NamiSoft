@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace NominaPro.ViewModels;
+namespace NamiSoft.ViewModels;
 
 public abstract class ViewModelBase : ObservableObject
 {

@@ -1,6 +1,6 @@
-using NominaPro.Datos;
+using NamiSoft.Datos;
 
-namespace NominaPro.Servicios;
+namespace NamiSoft.Servicios;
 
 public sealed record DashboardResumen(int EmpleadosActivos, int EmpleadosTotales, int Checadas, int Pendientes);
 

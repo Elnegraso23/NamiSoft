@@ -10,6 +10,7 @@ TestResults/
 *.userprefs
 
 ## Runtime / app data (se generan al ejecutar)
+NamiSoft.db*
 Nomina.db*
 *.db-journal
 *.db-wal

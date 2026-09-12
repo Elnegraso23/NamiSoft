@@ -2,11 +2,11 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
-using NominaPro.Modelos;
-using NominaPro.ViewModels;
-using NominaPro.Views;
+using NamiSoft.Modelos;
+using NamiSoft.ViewModels;
+using NamiSoft.Views;
 
-namespace NominaPro.UI;
+namespace NamiSoft.UI;
 
 public sealed class AppDialogService : IAppDialogService
 {

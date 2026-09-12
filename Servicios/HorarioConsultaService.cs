@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using NominaPro.Datos;
-using NominaPro.Modelos;
+using NamiSoft.Datos;
+using NamiSoft.Modelos;
 
-namespace NominaPro.Servicios;
+namespace NamiSoft.Servicios;
 
 public sealed class HorarioConsultaService
 {

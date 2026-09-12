@@ -1,8 +1,8 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using NominaPro.ViewModels;
+using NamiSoft.ViewModels;
 
-namespace NominaPro.Views;
+namespace NamiSoft.Views;
 
 public partial class EmployeeEditorWindow : Window
 {

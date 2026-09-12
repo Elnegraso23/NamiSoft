@@ -1,4 +1,4 @@
-namespace NominaPro.Enumeraciones;
+namespace NamiSoft.Enumeraciones;
 
 /// <summary>
 /// De dónde proviene una checada. El motor de nómina nunca distingue por origen;

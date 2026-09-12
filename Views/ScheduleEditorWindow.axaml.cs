@@ -1,10 +1,10 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using NominaPro.Modelos;
-using NominaPro.UI;
-using NominaPro.ViewModels;
+using NamiSoft.Modelos;
+using NamiSoft.UI;
+using NamiSoft.ViewModels;
 
-namespace NominaPro.Views;
+namespace NamiSoft.Views;
 
 public partial class ScheduleEditorWindow : Window
 {

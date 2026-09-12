@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace NominaPro.Datos.Migrations;
+namespace NamiSoft.Datos.Migrations;
 
 /// <summary>
 /// Esquema base tal como lo creaba EnsureCreated. En BDs existentes nunca se

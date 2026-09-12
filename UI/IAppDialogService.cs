@@ -1,6 +1,6 @@
-using NominaPro.Modelos;
+using NamiSoft.Modelos;
 
-namespace NominaPro.UI;
+namespace NamiSoft.UI;
 
 public interface IAppDialogService
 {

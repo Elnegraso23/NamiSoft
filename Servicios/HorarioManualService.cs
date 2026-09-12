@@ -1,6 +1,6 @@
-﻿using NominaPro.Modelos;
+﻿using NamiSoft.Modelos;
 
-namespace NominaPro.Servicios;
+namespace NamiSoft.Servicios;
 
 /// <summary>
 /// Corrige checadas existentes por semana. Delega el cálculo en ChecadasService

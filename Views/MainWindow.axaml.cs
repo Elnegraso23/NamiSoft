@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace NominaPro.Views;
+namespace NamiSoft.Views;
 
 public partial class MainWindow : Window
 {

@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using NominaPro.Servicios;
+using NamiSoft.Servicios;
 
-namespace NominaPro.ViewModels;
+namespace NamiSoft.ViewModels;
 
 public partial class DashboardViewModel : ViewModelBase, IRefreshable
 {

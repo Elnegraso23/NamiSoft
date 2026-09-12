@@ -1,8 +1,8 @@
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
-using NominaPro.UI;
+using NamiSoft.UI;
 
-namespace NominaPro.ViewModels;
+namespace NamiSoft.ViewModels;
 
 public sealed record NavEntry(string Key, string Label);
 

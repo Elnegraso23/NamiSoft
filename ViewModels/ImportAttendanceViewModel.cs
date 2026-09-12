@@ -1,13 +1,13 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using NominaPro.Modelos;
-using NominaPro.Servicios;
-using NominaPro.UI;
-using NominaPro.Utilidades;
+using NamiSoft.Modelos;
+using NamiSoft.Servicios;
+using NamiSoft.UI;
+using NamiSoft.Utilidades;
 using System.Collections.ObjectModel;
 using System.IO;
 
-namespace NominaPro.ViewModels;
+namespace NamiSoft.ViewModels;
 
 public partial class ImportAttendanceViewModel : ViewModelBase
 {

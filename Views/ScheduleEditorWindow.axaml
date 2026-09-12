@@ -1,6 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="NominaPro.Views.ScheduleEditorWindow"
+        x:Class="NamiSoft.Views.ScheduleEditorWindow"
         Title="Horario personalizado"
         Width="620" Height="590"
         WindowStartupLocation="CenterOwner">

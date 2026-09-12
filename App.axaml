@@ -1,7 +1,7 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="using:NominaPro"
-             x:Class="NominaPro.App"
+             xmlns:local="using:NamiSoft"
+             x:Class="NamiSoft.App"
              RequestedThemeVariant="Light">
   <Application.DataTemplates>
     <local:ViewLocator />
@@ -23,6 +23,6 @@
 
   <Application.Styles>
     <FluentTheme />
-    <StyleInclude Source="avares://NominaPro/Styles/AppStyles.axaml" />
+    <StyleInclude Source="avares://NamiSoft/Styles/AppStyles.axaml" />
   </Application.Styles>
 </Application>

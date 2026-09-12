@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace NominaPro.Datos.Migrations;
+namespace NamiSoft.Datos.Migrations;
 
 /// <summary>
 /// Trazabilidad de checadas: origen + fechas de creación/modificación + motivo.
