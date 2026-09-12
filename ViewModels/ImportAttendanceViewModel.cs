@@ -19,6 +19,7 @@ public partial class ImportAttendanceViewModel : ViewModelBase
     [ObservableProperty] private string filePath = "";
     [ObservableProperty] private string status = "Seleccione un archivo .xlsx de checadas.";
     [ObservableProperty] private bool canImport;
+    [ObservableProperty] private bool hasPreview;
 
     public ImportAttendanceViewModel(IAppDialogService dialogs, AppState appState)
     {
@@ -47,6 +48,7 @@ public partial class ImportAttendanceViewModel : ViewModelBase
             foreach (var row in rows.Take(100))
                 Preview.Add(row);
             CanImport = rows.Count > 0;
+            HasPreview = Preview.Count > 0;
             Status = $"Archivo listo: {Path.GetFileName(FilePath)} · {rows.Count} registros detectados";
         }
         catch (IOException)

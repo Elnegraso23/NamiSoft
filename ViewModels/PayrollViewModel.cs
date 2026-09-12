@@ -18,6 +18,7 @@ public partial class PayrollViewModel : ViewModelBase
     [ObservableProperty] private decimal tips;
     [ObservableProperty] private decimal totalPayroll;
     [ObservableProperty] private bool canExport;
+    [ObservableProperty] private bool hasRows;
 
     public PayrollViewModel(IAppDialogService dialogs) => _dialogs = dialogs;
 
@@ -32,6 +33,7 @@ public partial class PayrollViewModel : ViewModelBase
             Rows.Add(row);
         TotalPayroll = data.Sum(x => x.TotalPagar);
         CanExport = data.Count > 0;
+        HasRows = data.Count > 0;
     }
 
     [RelayCommand]

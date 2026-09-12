@@ -18,6 +18,7 @@ public partial class ManualScheduleViewModel : ViewModelBase, IRefreshable
 
     [ObservableProperty] private Empleado? selectedEmployee;
     [ObservableProperty] private DateTimeOffset? weekDate = DateTimeOffset.Now;
+    [ObservableProperty] private bool hasRows;
 
     public ManualScheduleViewModel(IAppDialogService dialogs) => _dialogs = dialogs;
 
@@ -44,6 +45,7 @@ public partial class ManualScheduleViewModel : ViewModelBase, IRefreshable
         var rows = await Task.Run(() => _query.ObtenerSemana(SelectedEmployee.NumeroEmpleado, date));
         foreach (var item in rows)
             Rows.Add(item);
+        HasRows = Rows.Count > 0;
     }
 
     [RelayCommand]

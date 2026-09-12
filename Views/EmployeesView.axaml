@@ -20,39 +20,49 @@
     </Border>
 
     <Border Grid.Row="1" Classes="card" Padding="0">
-      <Grid RowDefinitions="48,*">
-        <Border Background="#F9FAFB" BorderBrush="{DynamicResource BorderBrushSoft}" BorderThickness="0,0,0,1" Padding="16,0">
-          <Grid ColumnDefinitions="90,2*,1.2*,1.2*,120,110,110,75" VerticalAlignment="Center">
-            <TextBlock Text="Número" FontWeight="SemiBold"/>
-            <TextBlock Grid.Column="1" Text="Nombre" FontWeight="SemiBold"/>
-            <TextBlock Grid.Column="2" Text="Puesto" FontWeight="SemiBold"/>
-            <TextBlock Grid.Column="3" Text="Departamento" FontWeight="SemiBold"/>
-            <TextBlock Grid.Column="4" Text="$ / hora" FontWeight="SemiBold"/>
-            <TextBlock Grid.Column="5" Text="Turno" FontWeight="SemiBold"/>
-            <TextBlock Grid.Column="6" Text="Descanso" FontWeight="SemiBold"/>
-            <TextBlock Grid.Column="7" Text="Activo" FontWeight="SemiBold"/>
-          </Grid>
-        </Border>
+      <ScrollViewer HorizontalScrollBarVisibility="Auto">
+        <Grid MinWidth="880" RowDefinitions="48,*">
+          <Border Classes="tableHeader">
+            <Grid ColumnDefinitions="90,2*,1.2*,1.2*,120,110,110,75" VerticalAlignment="Center">
+              <TextBlock Text="Número" Classes="tableHeaderText"/>
+              <TextBlock Grid.Column="1" Text="Nombre" Classes="tableHeaderText"/>
+              <TextBlock Grid.Column="2" Text="Puesto" Classes="tableHeaderText"/>
+              <TextBlock Grid.Column="3" Text="Departamento" Classes="tableHeaderText"/>
+              <TextBlock Grid.Column="4" Text="$ / hora" Classes="tableHeaderText"/>
+              <TextBlock Grid.Column="5" Text="Turno" Classes="tableHeaderText"/>
+              <TextBlock Grid.Column="6" Text="Descanso" Classes="tableHeaderText"/>
+              <TextBlock Grid.Column="7" Text="Activo" Classes="tableHeaderText"/>
+            </Grid>
+          </Border>
 
-        <ListBox Grid.Row="1" ItemsSource="{Binding Employees}" SelectedItem="{Binding SelectedEmployee, Mode=TwoWay}" Background="Transparent" BorderThickness="0">
-          <ListBox.ItemTemplate>
-            <DataTemplate>
-              <Border Padding="16,12" BorderBrush="#F0F1F3" BorderThickness="0,0,0,1">
-                <Grid ColumnDefinitions="90,2*,1.2*,1.2*,120,110,110,75" VerticalAlignment="Center">
-                  <TextBlock Text="{Binding NumeroEmpleado}"/>
-                  <TextBlock Grid.Column="1" Text="{Binding Nombre}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
-                  <TextBlock Grid.Column="2" Text="{Binding Puesto}" TextTrimming="CharacterEllipsis"/>
-                  <TextBlock Grid.Column="3" Text="{Binding Departamento}" TextTrimming="CharacterEllipsis"/>
-                  <TextBlock Grid.Column="4" Text="{Binding SalarioHora}"/>
-                  <TextBlock Grid.Column="5" Text="{Binding Turno}"/>
-                  <TextBlock Grid.Column="6" Text="{Binding Descanso}"/>
-                  <CheckBox Grid.Column="7" IsChecked="{Binding Activo}" IsEnabled="False" HorizontalAlignment="Center"/>
-                </Grid>
-              </Border>
-            </DataTemplate>
-          </ListBox.ItemTemplate>
-        </ListBox>
-      </Grid>
+          <Grid Grid.Row="1" MinHeight="200">
+            <ListBox Classes="data" ItemsSource="{Binding Employees}" SelectedItem="{Binding SelectedEmployee, Mode=TwoWay}">
+              <ListBox.ItemTemplate>
+                <DataTemplate>
+                  <Border Classes="tableRow">
+                    <Grid ColumnDefinitions="90,2*,1.2*,1.2*,120,110,110,75" VerticalAlignment="Center">
+                      <TextBlock Text="{Binding NumeroEmpleado}"/>
+                      <TextBlock Grid.Column="1" Text="{Binding Nombre}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                      <TextBlock Grid.Column="2" Text="{Binding Puesto}" TextTrimming="CharacterEllipsis"/>
+                      <TextBlock Grid.Column="3" Text="{Binding Departamento}" TextTrimming="CharacterEllipsis"/>
+                      <TextBlock Grid.Column="4" Text="{Binding SalarioHora}"/>
+                      <TextBlock Grid.Column="5" Text="{Binding Turno}"/>
+                      <TextBlock Grid.Column="6" Text="{Binding Descanso}"/>
+                      <CheckBox Grid.Column="7" IsChecked="{Binding Activo}" IsEnabled="False" HorizontalAlignment="Center"/>
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+            <StackPanel IsVisible="{Binding !HasEmployees}" Spacing="10" Margin="0,32"
+                        VerticalAlignment="Center" HorizontalAlignment="Center">
+              <TextBlock Text="No hay empleados registrados todavía." Classes="emptyTitle"/>
+              <TextBlock Text="Agregue al primero para empezar a controlar asistencia y nómina." Classes="emptyHint"/>
+              <Button Classes="primary" Content="Agregar empleado" Command="{Binding NewEmployeeCommand}" HorizontalAlignment="Center"/>
+            </StackPanel>
+          </Grid>
+        </Grid>
+      </ScrollViewer>
     </Border>
   </Grid>
 </UserControl>

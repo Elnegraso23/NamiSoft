@@ -18,6 +18,7 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
     [ObservableProperty] private string selectedStatusFilter = "Activos";
     [ObservableProperty] private string searchText = "";
     [ObservableProperty] private Empleado? selectedEmployee;
+    [ObservableProperty] private bool hasEmployees;
 
     public EmployeesViewModel(IAppDialogService dialogs) => _dialogs = dialogs;
 
@@ -29,6 +30,7 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
         Employees.Clear();
         foreach (var employee in _service.Obtener(SelectedStatusFilter, SearchText))
             Employees.Add(employee);
+        HasEmployees = Employees.Count > 0;
     }
 
     [RelayCommand]
