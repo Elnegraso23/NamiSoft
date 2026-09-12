@@ -20,7 +20,7 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            NominaDatabase.EnsureCreated();
+            NominaDatabase.EnsureMigrated();
 
             var mainWindow = new MainWindow();
             var dialogs = new AppDialogService(() => mainWindow);

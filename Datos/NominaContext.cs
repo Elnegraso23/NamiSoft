@@ -50,6 +50,7 @@ public class NominaContext : DbContext
             e.Property(x => x.NumeroEmpleado).IsRequired().HasMaxLength(32);
             e.Property(x => x.HorasTrabajadas).HasPrecision(10, 2);
             e.Property(x => x.HorasExtra).HasPrecision(10, 2);
+            e.Property(x => x.Motivo).HasMaxLength(300);
         });
 
         modelBuilder.Entity<ChecadaPendiente>(e =>

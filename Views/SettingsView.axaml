@@ -12,16 +12,16 @@
         <Border Classes="card">
           <StackPanel Spacing="14">
             <TextBlock Text="Turno mañana" Classes="sectionTitle"/>
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+            <StackPanel Spacing="12">
               <StackPanel Spacing="5">
-                <TextBlock Text="Entrada" Classes="muted" FontSize="12"/>
-                <TimePicker SelectedTime="{Binding MorningEntry, Mode=TwoWay}" ClockIdentifier="24HourClock"/>
+                <TextBlock Text="Entrada" Classes="fieldLabel"/>
+                <TimePicker SelectedTime="{Binding MorningEntry, Mode=TwoWay}" ClockIdentifier="24HourClock" HorizontalAlignment="Stretch"/>
               </StackPanel>
-              <StackPanel Grid.Column="1" Spacing="5">
-                <TextBlock Text="Salida" Classes="muted" FontSize="12"/>
-                <TimePicker SelectedTime="{Binding MorningExit, Mode=TwoWay}" ClockIdentifier="24HourClock"/>
+              <StackPanel Spacing="5">
+                <TextBlock Text="Salida" Classes="fieldLabel"/>
+                <TimePicker SelectedTime="{Binding MorningExit, Mode=TwoWay}" ClockIdentifier="24HourClock" HorizontalAlignment="Stretch"/>
               </StackPanel>
-            </Grid>
+            </StackPanel>
             <StackPanel Spacing="5">
               <TextBlock Text="Tolerancia en minutos" Classes="muted" FontSize="12"/>
               <NumericUpDown Value="{Binding MorningTolerance, Mode=TwoWay}" Minimum="0" Maximum="180"/>
@@ -32,16 +32,16 @@
         <Border Grid.Column="1" Classes="card">
           <StackPanel Spacing="14">
             <TextBlock Text="Turno tarde" Classes="sectionTitle"/>
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+            <StackPanel Spacing="12">
               <StackPanel Spacing="5">
-                <TextBlock Text="Entrada" Classes="muted" FontSize="12"/>
-                <TimePicker SelectedTime="{Binding AfternoonEntry, Mode=TwoWay}" ClockIdentifier="24HourClock"/>
+                <TextBlock Text="Entrada" Classes="fieldLabel"/>
+                <TimePicker SelectedTime="{Binding AfternoonEntry, Mode=TwoWay}" ClockIdentifier="24HourClock" HorizontalAlignment="Stretch"/>
               </StackPanel>
-              <StackPanel Grid.Column="1" Spacing="5">
-                <TextBlock Text="Salida" Classes="muted" FontSize="12"/>
-                <TimePicker SelectedTime="{Binding AfternoonExit, Mode=TwoWay}" ClockIdentifier="24HourClock"/>
+              <StackPanel Spacing="5">
+                <TextBlock Text="Salida" Classes="fieldLabel"/>
+                <TimePicker SelectedTime="{Binding AfternoonExit, Mode=TwoWay}" ClockIdentifier="24HourClock" HorizontalAlignment="Stretch"/>
               </StackPanel>
-            </Grid>
+            </StackPanel>
             <StackPanel Spacing="5">
               <TextBlock Text="Tolerancia en minutos" Classes="muted" FontSize="12"/>
               <NumericUpDown Value="{Binding AfternoonTolerance, Mode=TwoWay}" Minimum="0" Maximum="180"/>

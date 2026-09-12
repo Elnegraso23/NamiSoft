@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using NominaPro.Enumeraciones;
+
 namespace NominaPro.Modelos
 {
     public class ChecadaEmpleado
@@ -29,5 +31,13 @@ namespace NominaPro.Modelos
         public int RetardoMinutos { get; set; }
 
         public bool TieneRetardo { get; set; }
+
+        public OrigenChecada Origen { get; set; } = OrigenChecada.Sistema;
+
+        public DateTime CreadaEn { get; set; }
+
+        public DateTime? ModificadaEn { get; set; }
+
+        public string? Motivo { get; set; }
     }
 }
