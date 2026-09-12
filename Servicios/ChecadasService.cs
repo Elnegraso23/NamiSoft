@@ -388,6 +388,34 @@ public class ChecadasService
             (!c.PrimeraChecada.HasValue || !c.UltimaChecada.HasValue));
     }
 
+    public List<ChecadaEmpleado> ObtenerRango(string? numeroEmpleado, DateTime inicio, DateTime fin)
+    {
+        using var db = NominaDatabase.CreateContext();
+        var query = db.Checadas
+            .Where(c => c.Fecha.Date >= inicio.Date && c.Fecha.Date <= fin.Date);
+        if (!string.IsNullOrWhiteSpace(numeroEmpleado))
+            query = query.Where(c => c.NumeroEmpleado == numeroEmpleado);
+        return query.OrderByDescending(c => c.Fecha).ThenBy(c => c.Nombre).ToList();
+    }
+
+    public bool EliminarChecada(int id)
+    {
+        using var db = NominaDatabase.CreateContext();
+        var checada = db.Checadas.FirstOrDefault(c => c.Id == id);
+        if (checada is null)
+            return false;
+        db.Checadas.Remove(checada);
+        db.SaveChanges();
+        return true;
+    }
+
+    public static (DateTime Inicio, DateTime Fin) SemanaDe(DateTime fecha)
+    {
+        int diferencia = fecha.DayOfWeek == DayOfWeek.Sunday ? 6 : (int)fecha.DayOfWeek - 1;
+        var inicio = fecha.Date.AddDays(-diferencia);
+        return (inicio, inicio.AddDays(6));
+    }
+
     private static void Recalcular(
         ChecadaEmpleado checada, Empleado empleado,
         ConfiguracionSistema configuracion, MotorNomina motor, NominaContext db)

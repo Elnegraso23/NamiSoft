@@ -27,6 +27,21 @@ public partial class PayrollViewModel : ViewModelBase
     {
         var date = (WeekDate ?? DateTimeOffset.Now).DateTime;
         var tips = Tips;
+
+        var (inicioSemana, finSemana) = ChecadasService.SemanaDe(date);
+        var incompletas = await Task.Run(() =>
+            new ChecadasService().ContarIncompletas(inicioSemana, finSemana));
+        if (incompletas > 0)
+        {
+            var proceed = await _dialogs.ConfirmAsync(
+                "Checadas incompletas",
+                $"Hay {incompletas} checadas sin entrada o salida en la semana " +
+                $"{inicioSemana:dd/MM}–{finSemana:dd/MM}. Revíselas en Asistencia > Incidencias.\n\n¿Calcular la nómina de todos modos?",
+                "Calcular");
+            if (!proceed)
+                return;
+        }
+
         var data = await Task.Run(() => _payroll.CalcularNomina(date, tips));
         Rows.Clear();
         foreach (var row in data)

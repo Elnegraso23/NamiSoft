@@ -18,5 +18,9 @@ namespace NominaPro.Modelos
 
         public TimeSpan? UltimaChecada { get; set; }
 
+        public string EntradaTexto => PrimeraChecada.HasValue ? PrimeraChecada.Value.ToString(@"hh\:mm") : "--:--";
+
+        public string SalidaTexto => UltimaChecada.HasValue ? UltimaChecada.Value.ToString(@"hh\:mm") : "--:--";
+
     }
 }

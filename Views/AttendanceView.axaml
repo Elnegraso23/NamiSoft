@@ -1,0 +1,189 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="NominaPro.Views.AttendanceView">
+  <Grid RowDefinitions="Auto,*" RowSpacing="16">
+    <StackPanel>
+      <TextBlock Text="Asistencia" Classes="pageTitle"/>
+      <TextBlock Text="Registre entradas y salidas sin depender de archivos. La importación es opcional." Classes="muted"/>
+    </StackPanel>
+
+    <TabControl Grid.Row="1">
+      <TabItem Header="Hoy">
+        <Grid ColumnDefinitions="320,*" ColumnSpacing="16" Margin="0,12,0,0">
+          <Border Classes="card" Padding="12">
+            <Grid RowDefinitions="Auto,*" RowSpacing="8">
+              <TextBox PlaceholderText="Buscar empleado…"
+                       Text="{Binding SearchText, Mode=TwoWay}"/>
+              <ListBox Grid.Row="1" Classes="data" ItemsSource="{Binding Employees}"
+                       SelectedItem="{Binding SelectedEmployee, Mode=TwoWay}">
+                <ListBox.ItemTemplate>
+                  <DataTemplate>
+                    <Border Padding="14,12" BorderBrush="#F0F1F3" BorderThickness="0,0,0,1" MinHeight="64">
+                      <StackPanel Spacing="2" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Nombre}" FontWeight="SemiBold" FontSize="15" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Text="{Binding NumeroEmpleado}" Classes="muted" FontSize="13"/>
+                      </StackPanel>
+                    </Border>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+            </Grid>
+          </Border>
+
+          <ScrollViewer Grid.Column="1">
+            <StackPanel Spacing="16">
+              <Border Classes="card">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="{Binding SelectedEmployee.Nombre, FallbackValue='Seleccione un empleado'}" FontSize="22" FontWeight="Bold" TextWrapping="Wrap"/>
+                  <TextBlock Text="{Binding DaySummary}" Classes="muted"/>
+                  <DatePicker SelectedDate="{Binding SelectedDate, Mode=TwoWay}" HorizontalAlignment="Left"/>
+                </StackPanel>
+              </Border>
+
+              <Border Classes="card">
+                <StackPanel Spacing="12">
+                  <TextBlock Text="Estado de hoy" Classes="sectionTitle"/>
+                  <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                    <StackPanel Spacing="4">
+                      <TextBlock Text="Entrada" Classes="fieldLabel"/>
+                      <TextBlock Text="{Binding EstadoHoy.Checada.EntradaTexto, FallbackValue='--:--'}" FontSize="26" FontWeight="Bold"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Spacing="4">
+                      <TextBlock Text="Salida" Classes="fieldLabel"/>
+                      <TextBlock Text="{Binding EstadoHoy.Checada.SalidaTexto, FallbackValue='--:--'}" FontSize="26" FontWeight="Bold"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Spacing="4">
+                      <TextBlock Text="Estado" Classes="fieldLabel"/>
+                      <TextBlock Text="{Binding EstadoHoy.Checada.EstadoTexto, FallbackValue='Sin registro'}" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                    </StackPanel>
+                  </Grid>
+                  <WrapPanel Orientation="Horizontal" ItemSpacing="12" LineSpacing="10">
+                    <Button Classes="primary" Content="REGISTRAR ENTRADA" Command="{Binding RegistrarEntradaCommand}"
+                            IsEnabled="{Binding CanEnter}" MinHeight="64" FontSize="17" Padding="28,10"/>
+                    <Button Content="REGISTRAR SALIDA" Command="{Binding RegistrarSalidaCommand}"
+                            IsEnabled="{Binding CanExit}" MinHeight="64" FontSize="17" Padding="28,10"/>
+                  </WrapPanel>
+                </StackPanel>
+              </Border>
+
+              <Border Classes="card">
+                <StackPanel Spacing="12">
+                  <TextBlock Text="Captura manual" Classes="sectionTitle"/>
+                  <TextBlock Text="Para días pasados o correcciones con hora exacta." Classes="muted"/>
+                  <Grid ColumnDefinitions="*,*,2*" ColumnSpacing="12">
+                    <StackPanel Spacing="5">
+                      <TextBlock Text="Entrada" Classes="fieldLabel"/>
+                      <TextBox Text="{Binding ManualEntrada, Mode=TwoWay}" PlaceholderText="HH:mm"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Spacing="5">
+                      <TextBlock Text="Salida" Classes="fieldLabel"/>
+                      <TextBox Text="{Binding ManualSalida, Mode=TwoWay}" PlaceholderText="HH:mm"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Spacing="5">
+                      <TextBlock Text="Motivo (opcional)" Classes="fieldLabel"/>
+                      <TextBox Text="{Binding ManualMotivo, Mode=TwoWay}" PlaceholderText="Ej. olvidó checar"/>
+                    </StackPanel>
+                  </Grid>
+                  <Button Classes="ghost" Content="Guardar captura" Command="{Binding GuardarManualCommand}" HorizontalAlignment="Left"/>
+                </StackPanel>
+              </Border>
+
+              <Border Classes="card">
+                <StackPanel Spacing="12">
+                  <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                    <TextBlock Text="Registros del día" Classes="sectionTitle"/>
+                    <Button Grid.Column="1" Classes="danger" Content="Eliminar seleccionada" Command="{Binding EliminarRegistroCommand}"/>
+                  </Grid>
+                  <ListBox Classes="data" ItemsSource="{Binding DayRecords}" SelectedItem="{Binding SelectedRecord, Mode=TwoWay}" MaxHeight="260">
+                    <ListBox.ItemTemplate>
+                      <DataTemplate>
+                        <Border Classes="tableRow" MinHeight="56">
+                          <Grid ColumnDefinitions="2*,110,110,110,*" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Nombre}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding EntradaTexto}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" Text="{Binding SalidaTexto}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="3" Text="{Binding HorasTrabajadas}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="4" Text="{Binding EstadoTexto}" Classes="muted" VerticalAlignment="Center"/>
+                          </Grid>
+                        </Border>
+                      </DataTemplate>
+                    </ListBox.ItemTemplate>
+                  </ListBox>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+          </ScrollViewer>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="Historial">
+        <Grid RowDefinitions="Auto,*" RowSpacing="12" Margin="0,12,0,0">
+          <TextBlock Text="Últimos 7 días del empleado seleccionado." Classes="muted"/>
+          <Border Grid.Row="1" Classes="card" Padding="0">
+            <Grid RowDefinitions="48,*">
+              <Border Classes="tableHeader">
+                <Grid ColumnDefinitions="120,2*,110,110,100,*" VerticalAlignment="Center">
+                  <TextBlock Text="Fecha" Classes="tableHeaderText"/>
+                  <TextBlock Grid.Column="1" Text="Empleado" Classes="tableHeaderText"/>
+                  <TextBlock Grid.Column="2" Text="Entrada" Classes="tableHeaderText"/>
+                  <TextBlock Grid.Column="3" Text="Salida" Classes="tableHeaderText"/>
+                  <TextBlock Grid.Column="4" Text="Horas" Classes="tableHeaderText"/>
+                  <TextBlock Grid.Column="5" Text="Estado" Classes="tableHeaderText"/>
+                </Grid>
+              </Border>
+              <ListBox Grid.Row="1" Classes="data" ItemsSource="{Binding History}">
+                <ListBox.ItemTemplate>
+                  <DataTemplate>
+                    <Border Classes="tableRow" MinHeight="56">
+                      <Grid ColumnDefinitions="120,2*,110,110,100,*" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Fecha, StringFormat='{}{0:dd/MM/yyyy}'}" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="{Binding Nombre}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="2" Text="{Binding EntradaTexto}" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="3" Text="{Binding SalidaTexto}" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="4" Text="{Binding HorasTrabajadas}" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="5" Text="{Binding EstadoTexto}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+            </Grid>
+          </Border>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="Incidencias">
+        <Grid RowDefinitions="Auto,*" RowSpacing="12" Margin="0,12,0,0">
+          <Border Classes="card">
+            <TextBlock Text="{Binding IssuesSummary}" TextWrapping="Wrap" FontSize="15" FontWeight="SemiBold"/>
+          </Border>
+          <Border Grid.Row="1" Classes="card" Padding="0">
+            <ListBox Classes="data" ItemsSource="{Binding Issues}">
+              <ListBox.ItemTemplate>
+                <DataTemplate>
+                  <Border Classes="tableRow" MinHeight="64">
+                    <Grid ColumnDefinitions="110,2*,160,*" VerticalAlignment="Center" ColumnSpacing="8">
+                      <TextBlock Text="{Binding Fecha, StringFormat='{}{0:dd/MM}'}" FontWeight="Bold" FontSize="16" VerticalAlignment="Center"/>
+                      <TextBlock Grid.Column="1" Text="{Binding Nombre}" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                      <TextBlock Grid.Column="2" Text="{Binding Tipo}" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                      <TextBlock Grid.Column="3" Text="{Binding Detalle}" Classes="muted" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </Border>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="Importar archivo">
+        <ScrollViewer Margin="0,12,0,0">
+          <StackPanel Spacing="12">
+            <TextBlock Text="Opcional: si ya tiene el reporte del reloj checador, impórtelo aquí. Los registros pasan por la misma validación." Classes="muted" TextWrapping="Wrap"/>
+            <ContentControl Content="{Binding ImportVM}"/>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+    </TabControl>
+  </Grid>
+</UserControl>

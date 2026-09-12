@@ -113,6 +113,22 @@ datos de aplicación, backups automáticos, pruebas de `MotorNomina`.
   excepciones a la UI: `AlternarActivo`/`Eliminar` devuelven `bool`.
 - Verificado con captura real del Dashboard en Linux (Resumen, KPIs, flujo).
 
+## 8. Módulo de asistencia interna (2026-09-12)
+
+- La app ya funciona sin Excel: registro interno + importación opcional,
+  ambos en la misma tabla `Checadas` con el mismo cálculo.
+- `ChecadasService` evolucionado: `RegistrarEntrada/Salida` (antiduplicados,
+  valida inactivo/salida>entrada), `AgregarManual`, `EditarChecada`,
+  `EliminarChecada`, `ObtenerDelDia/Rango`, `ObtenerIncidencias`,
+  `ContarIncompletas`, `ResumenPrevio`, `SemanaDe`. Motor intacto.
+- Nueva vista `Asistencia` (pestañas Hoy/Historial/Incidencias/Importar):
+  maestro-detalle táctil, botones 64px, captura manual inline, historial
+  7 días, incidencias con texto (no solo color), importación embebida.
+- Nómina advierte checadas incompletas antes de calcular (no bloquea).
+- Horas en `hh:mm` (`EntradaTexto/SalidaTexto`); nombre sin truncar.
+- Referencia de nivel: PoloTab (táctil grande, pocos pasos, offline),
+  sin copiar diseño ni assets.
+
 ## 5. Próximos pasos recomendados
 
 1. Compilar y ejecutar en Pop!_OS.

@@ -39,5 +39,26 @@ namespace NominaPro.Modelos
         public DateTime? ModificadaEn { get; set; }
 
         public string? Motivo { get; set; }
+
+        public bool FaltaEntrada => !PrimeraChecada.HasValue;
+
+        public bool FaltaSalida => PrimeraChecada.HasValue && !UltimaChecada.HasValue;
+
+        public bool Completa => PrimeraChecada.HasValue && UltimaChecada.HasValue;
+
+        public string EstadoTexto
+        {
+            get
+            {
+                string estado = Completa ? "Completo" : FaltaSalida ? "Falta salida" : "Falta entrada";
+                return ModificadaManual ? estado + " · Modificada" : estado;
+            }
+        }
+
+        public string EntradaTexto => PrimeraChecada.HasValue ? FormatoCorto(PrimeraChecada.Value) : "--:--";
+
+        public string SalidaTexto => UltimaChecada.HasValue ? FormatoCorto(UltimaChecada.Value) : "--:--";
+
+        private static string FormatoCorto(TimeSpan hora) => hora.ToString(@"hh\:mm");
     }
 }

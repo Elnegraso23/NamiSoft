@@ -16,7 +16,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [
         new("Dashboard", "Resumen"),
         new("Empleados", "Empleados"),
-        new("Checadas", "Importar checadas"),
+        new("Asistencia", "Asistencia"),
         new("Horario", "Horario manual"),
         new("Nomina", "Nómina semanal"),
         new("Configuracion", "Configuración"),
@@ -41,7 +41,7 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             ["Dashboard"] = new DashboardViewModel(),
             ["Empleados"] = new EmployeesViewModel(dialogs),
-            ["Checadas"] = new ImportAttendanceViewModel(dialogs, appState),
+            ["Asistencia"] = new AttendanceViewModel(dialogs, appState),
             ["Horario"] = new ManualScheduleViewModel(dialogs),
             ["Nomina"] = new PayrollViewModel(dialogs),
             ["Configuracion"] = new SettingsViewModel(dialogs)

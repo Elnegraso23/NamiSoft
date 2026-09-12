@@ -38,8 +38,8 @@
                     <TextBlock Text="{Binding NumeroEmpleado}"/>
                     <TextBlock Grid.Column="1" Text="{Binding Nombre}"/>
                     <TextBlock Grid.Column="2" Text="{Binding Fecha, StringFormat='{}{0:dd/MM/yyyy}'}"/>
-                    <TextBlock Grid.Column="3" Text="{Binding PrimeraChecada}"/>
-                    <TextBlock Grid.Column="4" Text="{Binding UltimaChecada}"/>
+                    <TextBlock Grid.Column="3" Text="{Binding EntradaTexto}"/>
+                    <TextBlock Grid.Column="4" Text="{Binding SalidaTexto}"/>
                   </Grid>
                 </Border>
               </DataTemplate>
