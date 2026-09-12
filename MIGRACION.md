@@ -100,6 +100,19 @@ Pendiente: subir EF Core Sqlite 8.0.11 → 10.x (NU1903), rediseño
 pantalla por pantalla (siguiente: Empleados), ruta de BD a carpeta de
 datos de aplicación, backups automáticos, pruebas de `MotorNomina`.
 
+## 7. Capa de persistencia (2026-09-12)
+
+- `Datos/NominaDatabase`: único punto de acceso (ruta + conexión + factory).
+  17 `new NominaContext()` dispersos → `NominaDatabase.CreateContext()`.
+- `NominaContext`: ctor con opciones + `OnModelCreating` (índice único en
+  `NumeroEmpleado`, campos requeridos, precisión en `decimal`). Dinero ya
+  estaba en `decimal` en todo el modelo. Sin TXT/JSON/CSV como almacén:
+  Excel solo importación/exportación.
+- Eliminado `EstadoSistema` estático duplicado (solo queda `AppState`).
+- `EmpleadoService.Guardar` ahora es atómico (transacción) y ya no lanza
+  excepciones a la UI: `AlternarActivo`/`Eliminar` devuelven `bool`.
+- Verificado con captura real del Dashboard en Linux (Resumen, KPIs, flujo).
+
 ## 5. Próximos pasos recomendados
 
 1. Compilar y ejecutar en Pop!_OS.

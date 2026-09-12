@@ -15,7 +15,7 @@ namespace NominaPro.Servicios
         {
             int sincronizadas = 0;
 
-            using (var db = new NominaContext())
+            using (var db = NominaDatabase.CreateContext())
             {
                 var configuracion = db.ConfiguracionSistema.FirstOrDefault();
 

@@ -17,7 +17,7 @@ namespace NominaPro.Servicios
 
             MotorNomina motor = new MotorNomina();
 
-            using (var db = new NominaContext())
+            using (var db = NominaDatabase.CreateContext())
             {
                 var configuracion = db.ConfiguracionSistema.FirstOrDefault();
 

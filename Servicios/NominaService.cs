@@ -14,7 +14,7 @@ namespace NominaPro.Servicios
         {
             List<NominaEmpleado> lista = new();
 
-            using (var db = new NominaContext())
+            using (var db = NominaDatabase.CreateContext())
             {
                 var configuracion = db.ConfiguracionSistema.FirstOrDefault();
 

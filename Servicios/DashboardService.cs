@@ -8,7 +8,7 @@ public sealed class DashboardService
 {
     public DashboardResumen Obtener()
     {
-        using var db = new NominaContext();
+        using var db = NominaDatabase.CreateContext();
         return new DashboardResumen(
             db.Empleados.Count(e => e.Activo),
             db.Empleados.Count(),

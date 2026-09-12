@@ -7,7 +7,7 @@ public sealed class ConfiguracionService
 {
     public ConfiguracionSistema ObtenerOCrear()
     {
-        using var db = new NominaContext();
+        using var db = NominaDatabase.CreateContext();
         var config = db.ConfiguracionSistema.FirstOrDefault();
         if (config is not null)
             return config;
@@ -33,7 +33,7 @@ public sealed class ConfiguracionService
 
     public void Guardar(ConfiguracionSistema value)
     {
-        using var db = new NominaContext();
+        using var db = NominaDatabase.CreateContext();
         var config = db.ConfiguracionSistema.FirstOrDefault();
         if (config is null)
         {

@@ -75,8 +75,6 @@ public partial class ImportAttendanceViewModel : ViewModelBase
             var rows = await Task.Run(() => new ExcelHelper().LeerReporteAsistencia(FilePath));
             var result = await Task.Run(() => new ChecadasService().GuardarChecadas(rows));
 
-            EstadoSistema.ArchivoCargado = true;
-            EstadoSistema.NombreArchivo = Path.GetFileName(FilePath);
             _appState.ArchivoCargado = true;
             _appState.NombreArchivo = Path.GetFileName(FilePath);
 

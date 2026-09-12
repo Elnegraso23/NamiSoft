@@ -9,7 +9,7 @@ public sealed class EmpleadoService
 {
     public List<Empleado> Obtener(string filtroEstado, string busqueda)
     {
-        using var db = new NominaContext();
+        using var db = NominaDatabase.CreateContext();
         var query = db.Empleados.AsNoTracking().AsQueryable();
 
         query = filtroEstado switch
@@ -34,19 +34,19 @@ public sealed class EmpleadoService
 
     public Empleado? ObtenerPorId(int id)
     {
-        using var db = new NominaContext();
+        using var db = NominaDatabase.CreateContext();
         return db.Empleados.AsNoTracking().FirstOrDefault(e => e.Id == id);
     }
 
     public List<Empleado> ObtenerTodos()
     {
-        using var db = new NominaContext();
+        using var db = NominaDatabase.CreateContext();
         return db.Empleados.AsNoTracking().OrderBy(e => e.NumeroEmpleado).ToList();
     }
 
     public List<HorarioEmpleado> ObtenerHorarioPersonalizado(string numeroEmpleado)
     {
-        using var db = new NominaContext();
+        using var db = NominaDatabase.CreateContext();
         return db.HorariosEmpleado.AsNoTracking()
             .Where(h => h.NumeroEmpleado == numeroEmpleado)
             .ToList();
@@ -63,14 +63,14 @@ public sealed class EmpleadoService
         if (empleado.SalarioHora < 0)
             return "El salario por hora no puede ser negativo.";
 
-        using var db = new NominaContext();
+        using var db = NominaDatabase.CreateContext();
 
         var numero = empleado.NumeroEmpleado.Trim();
         bool existe = db.Empleados.Any(e => e.NumeroEmpleado == numero && e.Id != empleado.Id);
         if (existe)
             return "Ese número de empleado ya existe.";
 
-        Empleado destino;
+        Empleado? destino;
         if (empleado.Id == 0)
         {
             destino = new Empleado();
@@ -78,8 +78,9 @@ public sealed class EmpleadoService
         }
         else
         {
-            destino = db.Empleados.Find(empleado.Id)
-                ?? throw new InvalidOperationException("No se encontró el empleado a editar.");
+            destino = db.Empleados.Find(empleado.Id);
+            if (destino is null)
+                return "No se encontró el empleado a editar. Recargue la lista e intente de nuevo.";
         }
 
         destino.NumeroEmpleado = numero;
@@ -107,6 +108,8 @@ public sealed class EmpleadoService
             return "Debe configurar un horario personalizado antes de guardar el empleado.";
         }
 
+        using var transaction = db.Database.BeginTransaction();
+
         db.SaveChanges();
 
         var anteriores = db.HorariosEmpleado.Where(h => h.NumeroEmpleado == numero).ToList();
@@ -133,23 +136,27 @@ public sealed class EmpleadoService
         }
 
         db.SaveChanges();
+        transaction.Commit();
         return "OK";
     }
 
-    public void AlternarActivo(int id)
+    public bool AlternarActivo(int id)
     {
-        using var db = new NominaContext();
-        var empleado = db.Empleados.Find(id)
-            ?? throw new InvalidOperationException("Empleado no encontrado.");
+        using var db = NominaDatabase.CreateContext();
+        var empleado = db.Empleados.Find(id);
+        if (empleado is null)
+            return false;
         empleado.Activo = !empleado.Activo;
         db.SaveChanges();
+        return true;
     }
 
-    public void Eliminar(int id)
+    public bool Eliminar(int id)
     {
-        using var db = new NominaContext();
-        var empleado = db.Empleados.Find(id)
-            ?? throw new InvalidOperationException("Empleado no encontrado.");
+        using var db = NominaDatabase.CreateContext();
+        var empleado = db.Empleados.Find(id);
+        if (empleado is null)
+            return false;
 
         var horarios = db.HorariosEmpleado.Where(h => h.NumeroEmpleado == empleado.NumeroEmpleado).ToList();
         if (horarios.Count > 0)
@@ -157,5 +164,6 @@ public sealed class EmpleadoService
 
         db.Empleados.Remove(empleado);
         db.SaveChanges();
+        return true;
     }
 }

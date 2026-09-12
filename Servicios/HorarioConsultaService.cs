@@ -12,7 +12,7 @@ public sealed class HorarioConsultaService
         DateTime inicio = fecha.Date.AddDays(-diferencia);
         DateTime fin = inicio.AddDays(6);
 
-        using var db = new NominaContext();
+        using var db = NominaDatabase.CreateContext();
         return db.Checadas.AsNoTracking()
             .Where(c => c.NumeroEmpleado == numeroEmpleado && c.Fecha >= inicio && c.Fecha <= fin)
             .OrderBy(c => c.Fecha)
@@ -33,7 +33,7 @@ public sealed class HorarioConsultaService
 
     public int ContarChecadas()
     {
-        using var db = new NominaContext();
+        using var db = NominaDatabase.CreateContext();
         return db.Checadas.Count();
     }
 }

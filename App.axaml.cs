@@ -20,10 +20,7 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            using (var db = new NominaContext())
-            {
-                db.Database.EnsureCreated();
-            }
+            NominaDatabase.EnsureCreated();
 
             var mainWindow = new MainWindow();
             var dialogs = new AppDialogService(() => mainWindow);

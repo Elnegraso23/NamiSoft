@@ -61,7 +61,12 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
             return;
         }
 
-        _service.AlternarActivo(SelectedEmployee.Id);
+        if (!await Task.Run(() => _service.AlternarActivo(SelectedEmployee.Id)))
+        {
+            await _dialogs.ShowInfoAsync("Empleados", "No se encontró el empleado. Recargue la lista.");
+            return;
+        }
+
         Refresh();
     }
 
@@ -82,7 +87,12 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
         if (!accepted)
             return;
 
-        _service.Eliminar(SelectedEmployee.Id);
+        if (!await Task.Run(() => _service.Eliminar(SelectedEmployee.Id)))
+        {
+            await _dialogs.ShowInfoAsync("Empleados", "No se encontró el empleado. Recargue la lista.");
+            return;
+        }
+
         Refresh();
     }
 
