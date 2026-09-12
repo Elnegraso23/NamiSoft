@@ -1,182 +1,101 @@
-# NamiSoft · migración a Avalonia
+# NamiSoft (interno, repo privado)
 
-Esta carpeta contiene una migración funcional de la aplicación original **C# + WinForms** a **C# + .NET 10 + Avalonia 12 + MVVM**.
+Sistema de control de asistencia y nómina semanal para operación con pantalla
+táctil en Windows, desarrollado y probado en Linux/Pop!_OS.
 
-## Qué conserva del proyecto original
+Stack: C# + .NET 10 + Avalonia UI + MVVM (CommunityToolkit.Mvvm) +
+Entity Framework Core + SQLite. Sin componentes de pago
+(ver `THIRD_PARTY_LICENSES.md`).
 
-Se conservaron y reutilizan las capas que no dependían de WinForms:
+## Estado actual (2026-09-12)
 
-- `Modelos/`
-- `Enumeraciones/`
-- `Datos/NominaContext.cs`
-- `Servicios/MotorNomina.cs`
-- `Servicios/NominaService.cs`
-- `Servicios/ChecadasService.cs`
-- `Servicios/HorarioManualService.cs`
-- `Servicios/SincronizarChecadasPendientesService.cs`
-- `Servicios/ExcelNominaService.cs`
-- `Utilidades/ExcelHelper.cs`
+- Migración WinForms → Avalonia completa. Cero `System.Windows.Forms`.
+- Módulo **Asistencia** con registro interno (ya no depende de Excel;
+  la importación queda como opción en su pestaña).
+- `ChecadaEmpleado` con trazabilidad: origen, creación, modificación, motivo.
+- Migraciones EF con línea base sin pérdida de datos (`EnsureMigrated`).
+- Sistema de diseño táctil (48px+), navegación lateral con sección activa,
+  estados vacíos accionables, E/S pesada fuera del hilo UI.
+- Compila en `net10.0` con 0 errores. Verificado con capturas reales en Linux.
 
-La interfaz `Form + Designer.cs + DataGridView + MessageBox + FileDialog` fue reemplazada por Avalonia.
-
-## Qué hace NamiSoft
-
-1. **Empleados**: alta, edición, activación/desactivación y eliminación.
-2. **Horarios**: turnos mañana/tarde y horario personalizado por día.
-3. **Checadas**: importa un reporte Excel (`.xlsx`) y lo transforma a registros de asistencia.
-4. **Motor de nómina**: calcula horas trabajadas, retardos y reglas definidas en configuración.
-5. **Corrección manual**: permite ajustar entrada/salida de checadas existentes.
-6. **Nómina semanal**: calcula sueldo, descuentos, propinas, prima dominical y total.
-7. **Excel**: exporta la nómina semanal a `.xlsx` con ClosedXML.
-8. **SQLite**: persiste empleados, checadas, horarios y configuración en `NamiSoft.db` (antes `Nomina.db`, se migra sola).
-
-## Nueva estructura
-
-```text
-NamiSoft-Avalonia/
-├── Datos/                 Entity Framework Core + SQLite
-├── Enumeraciones/         Enumeraciones del dominio
-├── Modelos/               Entidades y DTOs originales
-├── Servicios/             Motor, nómina, checadas, Excel y nuevos servicios UI-free
-├── Utilidades/            Lectura de Excel
-├── UI/                    Diálogos multiplataforma y estado de aplicación
-├── ViewModels/            Lógica de presentación (MVVM)
-├── Views/                 Interfaz Avalonia AXAML
-├── Styles/                Estilos globales
-├── App.axaml
-├── Program.cs
-└── NamiSoft.csproj
-```
-
-## Requisitos
-
-- .NET SDK 10
-- Linux: entorno gráfico X11/XWayland compatible con Avalonia
-- Windows: Windows 10/11
-
-### Pop!_OS
+## Cómo correrlo
 
 ```bash
-sudo apt update
-sudo apt install dotnet-sdk-10.0
+./run-linux.sh        # restore + build + run
 ```
-
-Si tu repositorio de Pop!_OS no ofrece .NET 10, instala el SDK siguiendo el repositorio oficial de Microsoft para la versión de Ubuntu en la que se basa tu Pop!_OS.
-
-
-### Atajos incluidos
-
-En Pop!_OS puedes ejecutar:
 
 ```bash
-./run-linux.sh
-```
-
-Para generar una publicación Windows x64 desde Linux:
-
-```bash
-./publish-windows.sh
-```
-
-En Windows PowerShell puedes usar:
-
-```powershell
-./run-windows.ps1
-```
-
-## Ejecutar en Linux
-
-```bash
-cd NamiSoft-Avalonia
-dotnet restore
+dotnet build NamiSoft.csproj
 dotnet run
 ```
 
-Abre la carpeta en Zed:
+Publicar para Windows (plataforma comercial):
 
 ```bash
-zed .
+./publish-windows.sh  # → publish/win-x64 (self-contained)
 ```
 
-Los archivos visuales están en `Views/*.axaml`. Guarda cambios y vuelve a ejecutar `dotnet run` para verlos.
+En Windows PowerShell: `./run-windows.ps1`.
 
-## Ejecutar en Windows
+Requisito: .NET SDK 10 (`dotnet --list-sdks` debe mostrar `10.x`).
 
-Con .NET 10 SDK instalado:
+## Módulos
 
-```powershell
-cd C:\ruta\NamiSoft-Avalonia
-dotnet restore
-dotnet run
-```
-
-También puedes abrir `NamiSoft.csproj` en Visual Studio, Rider, VS Code o Zed.
-
-## Publicar
-
-### Windows x64
-
-```bash
-dotnet publish -c Release -r win-x64 --self-contained true
-```
-
-### Linux x64
-
-```bash
-dotnet publish -c Release -r linux-x64 --self-contained true
-```
-
-Los archivos aparecen dentro de `bin/Release/net10.0/<runtime>/publish/`.
-
-## Base de datos existente
-
-El archivo local se llama:
-
-```text
-NamiSoft.db
-```
-
-Si vienes de la versión anterior (`Nomina.db`), la aplicación la detecta
-y la copia automáticamente a `NamiSoft.db` en el primer arranque.
-
-Si ya tienes una base real de la versión WinForms, **haz una copia de seguridad primero**. Para probar la migración con datos existentes, copia `NamiSoft.db` (antes `Nomina.db`, se migra sola) al directorio desde el que ejecutas la aplicación.
-
-No borres tu proyecto WinForms hasta haber comparado todos los resultados de nómina con datos reales.
-
-## Dependencias principales
-
-El proyecto evita componentes Avalonia Pro/Plus y controles comerciales.
-
-- Avalonia 12.1.1
-- CommunityToolkit.Mvvm 8.4.2
-- Entity Framework Core SQLite 10.0.11
-- ClosedXML 0.105.1
-
-No se usa `FontAwesome.Sharp` porque era una dependencia específica de la UI WinForms.
-
-## Pantallas migradas
-
-| WinForms original | Avalonia |
+| Sección | Qué hace |
 |---|---|
-| `FrmPrincipal` | `MainWindow` + `DashboardView` |
-| `FrmEmpleados` | `EmployeesView` |
-| `FrmNuevoEmpleado` | `EmployeeEditorWindow` |
-| `FrmHorarioPersonalizado` | `ScheduleEditorWindow` |
-| `FrmImportarChecadas` | `ImportAttendanceView` |
-| `FrmHorarioManual` | `ManualScheduleView` |
-| `FrmNomina` | `PayrollView` |
-| `FrmConfiguracion` | `SettingsView` |
+| Resumen | KPIs (activos, totales, checadas, pendientes) y flujo del programa |
+| Empleados | Alta, edición, activar/desactivar, eliminar (con confirmación), sincronizar pendientes |
+| Asistencia → Hoy | Reloj táctil: entrada/salida con antiduplicados, captura manual, registros del día |
+| Asistencia → Historial | Últimos 7 días del empleado |
+| Asistencia → Incidencias | Falta entrada/salida, modificadas; revisar antes de nómina |
+| Asistencia → Importar | Excel opcional con la misma validación y tabla que el registro interno |
+| Horario manual | Corrección semanal de entrada/salida (delega el cálculo, no duplica reglas) |
+| Nómina semanal | Cálculo + aviso de incompletas (no bloquea) + exportación a Excel |
+| Configuración | Turnos, tolerancias, descuentos por retardo, prima dominical |
 
-`FrmEditarEmpleado` del proyecto original estaba vacío y no necesitó una vista separada; editar y crear usan el mismo editor.
+## Datos y migraciones
 
-## Nota de validación
+- Archivo local: `NamiSoft.db` (gitignored). Si existe `Nomina.db` anterior,
+  se copia sola en el primer arranque (con checkpoint WAL para no perder datos).
+- Acceso centralizado en `Datos/NominaDatabase.cs`. La UI no conoce rutas ni SQL.
+- Migraciones en `Datos/Migrations/`. BDs viejas (sin historial) se registran
+  como línea base y solo reciben lo que les falte.
+- Dinero siempre en `decimal`. `Guardar` de empleado es atómico (transacción).
+- Haz copia de `NamiSoft.db` antes de probar cambios de nómina con datos reales.
 
-La migración fue realizada a nivel de código y estructura. El entorno donde se generó este paquete no dispone del SDK de .NET, por lo que el paso final que debes hacer en tu Pop!_OS es:
+## Estructura
 
-```bash
-dotnet restore
-dotnet build
-dotnet run
+```text
+├── Datos/          NominaDatabase (factory), NominaContext, Migrations/
+├── Enumeraciones/  TipoHorario, OrigenChecada
+├── Modelos/        Entidades y DTOs
+├── Servicios/      Reglas de negocio (sin UI)
+├── Utilidades/     Lectura de Excel
+├── UI/             Diálogos multiplataforma, AppState
+├── ViewModels/     Estado y comandos por pantalla
+├── Views/          AXAML + code-behind solo visual
+└── Styles/         Sistema de diseño (AppStyles.axaml)
 ```
 
-Si `dotnet build` devuelve un error concreto, corrígelo antes de continuar con personalización visual. Conserva el WinForms original como referencia durante esta fase.
+Reglas: Views sin acceso a BD; ViewModels sin SQL; sin excepciones sin manejar
+hacia la UI; operaciones pesadas con `Task.Run`; botones táctiles ≥48px.
+
+## Pendientes conocidos
+
+- Subir `Microsoft.EntityFrameworkCore.Sqlite` 8.0.11 → 10.x (aviso NU1903).
+- Mover la BD a carpeta de datos de aplicación + respaldos automáticos.
+- Pruebas automáticas de `MotorNomina` y `NominaService`.
+- Publicar `win-x64` y probar en el equipo Windows real.
+- Comparar nómina WinForms vs NamiSoft con la misma BD antes de producción.
+- Ver detalle de avance por fase en `MIGRACION.md`.
+
+## Notas de desarrollo
+
+- Los cambios se verifican con `dotnet build` y capturas reales de la app
+  corriendo en X11 (capturas vía `xwd`; la navegación sintética con
+  `xdotool` falla si la sesión está en uso — en ese caso verificar a mano).
+- Sintaxis de bindings a cuidar: `PlaceholderText` (no `Watermark`),
+  sin `Padding` en `StackPanel`, negación `!Flag` válida en `IsVisible`.
+- `DbContextAttribute` vive en `Microsoft.EntityFrameworkCore.Infrastructure`
+  (requerido para que EF descubra las migraciones en runtime).
+- Commits en español, rama `main`, remoto `origin → Elnegraso23/NamiSoft`.
