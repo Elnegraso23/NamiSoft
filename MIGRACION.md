@@ -96,9 +96,8 @@ Antes de reemplazar la versión WinForms en producción, compara ambos programas
   cálculo/exportación de nómina, sincronización y horario manual.
 - Empleados: barra de acciones con `WrapPanel` (ya no se desborda en 1366px).
 
-Pendiente: subir EF Core Sqlite 8.0.11 → 10.x (NU1903), rediseño
-pantalla por pantalla (siguiente: Empleados), ruta de BD a carpeta de
-datos de aplicación, backups automáticos, pruebas de `MotorNomina`.
+Pendiente: rediseño pantalla por pantalla (siguiente: Empleados), ruta de BD a
+carpeta de datos de aplicación, backups automáticos, pruebas de `MotorNomina`.
 
 ## 7. Capa de persistencia (2026-09-12)
 
@@ -139,3 +138,68 @@ datos de aplicación, backups automáticos, pruebas de `MotorNomina`.
 6. Cambiar la ubicación de la base de datos a una ruta de datos de aplicación antes de distribuir instaladores.
 7. Agregar copias de seguridad automáticas de SQLite.
 8. Crear publicación `win-x64` y probar en la caja Windows real.
+
+## 9. Migración de SQLite a Microsoft SQL Server (2026-10-28)
+
+Motivo: la materia de Base de Datos exige el motor de Microsoft. La app pasa de
+un archivo local `NamiSoft.db` a una instancia SQL Server 2022 (contenedor
+`mssql-bd`, `MSSQL_PID=Developer`, puerto 1433).
+
+### Cambios de código
+
+- `NamiSoft.csproj`: `Microsoft.EntityFrameworkCore.Sqlite` 8.0.11 →
+  `Microsoft.EntityFrameworkCore.SqlServer` 10.0.14 +
+  `Microsoft.EntityFrameworkCore.Design` 10.0.14. Se fija
+  `System.Security.Cryptography.Pkcs` 10.0.14 para eliminar NU1902/NU1903.
+- `Datos/NominaContext.cs`: `UseSqlite` → `UseSqlServer`.
+- `Datos/NominaDatabase.cs`: se eliminó toda la lógica SQLite
+  (`SqliteConnection` heredada, `PRAGMA wal_checkpoint`, `sqlite_master`,
+  `pragma_table_info`, `INSERT OR IGNORE`). `EnsureMigrated()` ahora es
+  `db.Database.Migrate()`.
+  La cadena se resuelve en este orden: `NAMISOFT_DB_CONNECTION` →
+  `NAMISOFT_DB_PASSWORD` (+ `NAMISOFT_DB_SERVER` / `NAMISOFT_DB_NAME`) →
+  archivo `mssql.pass` junto al ejecutable o `~/.config/namisoft/mssql.pass`.
+  Ninguna contraseña queda en el repositorio.
+- `Datos/Migrations/`: se borraron las migraciones SQLite y se regeneró una
+  única `InitialCreate` con el proveedor SQL Server.
+
+### Equivalencias de tipos generadas
+
+| Modelo C# | SQLite anterior | SQL Server actual |
+|---|---|---|
+| `int Id` (PK) | `INTEGER` + `Sqlite:Autoincrement` | `int` + `SqlServer:Identity(1,1)` |
+| `string` con `HasMaxLength` | `TEXT` | `nvarchar(n)` |
+| `string` sin límite | `TEXT` | `nvarchar(max)` |
+| `DateTime` | `TEXT` | `datetime2` |
+| `TimeSpan` / `TimeSpan?` | `TEXT` | `time` |
+| `decimal(p,s)` | `TEXT` | `decimal(p,s)` |
+| `bool` | `INTEGER` | `bit` |
+
+Índices conservados: `IX_Empleados_NumeroEmpleado` (**único**),
+`IX_Checadas_NumeroEmpleado_Fecha`, `IX_ChecadasPendientes_NumeroEmpleado_Fecha`,
+`IX_HorariosEmpleado_NumeroEmpleado_DiaSemana`.
+
+### Verificación real (no simulada)
+
+- `dotnet build`: 0 errores, 0 advertencias.
+- `dotnet ef database update`: base `NamiSoft` creada con 5 tablas + historial EF.
+- Prueba de humo con la misma capa de datos: INSERT/SELECT de un empleado y una
+  checada con `TimeSpan` (07:58 / 17:03) y `decimal` (9.08 / 1.50) → round-trip
+  correcto.
+- Duplicado de `NumeroEmpleado` rechazado por el índice único:
+  `SqlException: Cannot insert duplicate key row ... IX_Empleados_NumeroEmpleado`.
+- App Avalonia arrancada en display virtual contra SQL Server: Dashboard muestra
+  Empleados=1, Checadas=1 (datos insertados vía EF Core), sin excepciones.
+- `sql/NamiSoft_SQLServer.sql` ejecutado en una base limpia: 6 tablas, 2
+  empleados, 2 checadas y 1 configuración inicial.
+
+### Cómo levantar el entorno
+
+```bash
+podman run -d --name mssql-bd --restart=unless-stopped \
+  -e ACCEPT_EULA=Y -e "MSSQL_SA_PASSWORD=<password>" -e MSSQL_PID=Developer \
+  -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
+export NAMISOFT_DB_CONNECTION="Server=localhost,1433;Database=NamiSoft;User Id=sa;Password=<password>;Encrypt=True;TrustServerCertificate=True"
+dotnet run
+```
+

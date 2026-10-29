@@ -4,7 +4,7 @@ Sistema de control de asistencia y nómina semanal para operación con pantalla
 táctil en Windows, desarrollado y probado en Linux/Pop!_OS.
 
 Stack: C# + .NET 10 + Avalonia UI + MVVM (CommunityToolkit.Mvvm) +
-Entity Framework Core + SQLite. Sin componentes de pago
+Entity Framework Core 10 + Microsoft SQL Server 2022. Sin componentes de pago
 (ver `THIRD_PARTY_LICENSES.md`).
 
 ## Estado actual (2026-09-12)
@@ -20,9 +20,33 @@ Entity Framework Core + SQLite. Sin componentes de pago
 
 ## Cómo correrlo
 
+Requisitos:
+
+1. .NET SDK 10 (`dotnet --list-sdks` debe mostrar `10.x`).
+2. SQL Server 2022 accesible en `localhost,1433` (ver abajo).
+3. La contraseña de `sa` disponible por variable de entorno o archivo local.
+
 ```bash
+# 1) SQL Server 2022 en contenedor (rootless)
+podman run -d --name mssql-bd --restart=unless-stopped \
+  -e ACCEPT_EULA=Y -e "MSSQL_SA_PASSWORD=<password>" -e MSSQL_PID=Developer \
+  -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
+
+# 2) Cadena de conexión (una de las dos opciones)
+export NAMISOFT_DB_CONNECTION="Server=localhost,1433;Database=NamiSoft;User Id=sa;Password=<password>;Encrypt=True;TrustServerCertificate=True"
+# o bien:
+export NAMISOFT_DB_PASSWORD="<password>"
+
+# 3) Ejecutar (aplica migraciones automáticamente al arrancar)
 ./run-linux.sh        # restore + build + run
 ```
+
+También se puede guardar solo la contraseña en `~/.config/namisoft/mssql.pass`
+(permisos `600`) y dejar que la app arme la cadena con los valores por defecto.
+La contraseña **nunca** se versiona en el repositorio.
+
+Esquema manual para SSMS: `sql/NamiSoft_SQLServer.sql` (crea la base, las tablas
+y datos iniciales; es idempotente).
 
 ```bash
 dotnet build NamiSoft.csproj

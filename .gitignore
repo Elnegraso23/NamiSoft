@@ -22,3 +22,7 @@ Thumbs.db
 *~
 .idea/
 .vscode/
+
+# Credenciales locales de SQL Server
+*.pass
+mssql.pass

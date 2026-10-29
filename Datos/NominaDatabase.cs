@@ -4,117 +4,96 @@ namespace NamiSoft.Datos;
 
 /// <summary>
 /// Único punto de acceso a la base de datos. Ninguna otra capa conoce
-/// rutas, cadenas de conexión ni detalles del proveedor.
-/// Para cambiar de proveedor (p. ej. PostgreSQL) se modifica solo este archivo.
+/// cadenas de conexión ni detalles del proveedor.
+/// Motor: Microsoft SQL Server 2022 (instancia local en contenedor).
+/// Para cambiar de servidor o de base basta con definir NAMISOFT_DB_CONNECTION
+/// o las variables NAMISOFT_DB_SERVER / NAMISOFT_DB_NAME / NAMISOFT_DB_PASSWORD.
 /// </summary>
 public static class NominaDatabase
 {
-    /// <summary>
-    /// Ruta actual: archivo local junto al ejecutable (una sola terminal, offline).
-    /// Futuro: mover a carpeta de datos de aplicación copiando el archivo existente.
-    /// </summary>
-    public static string DatabasePath { get; set; } = "NamiSoft.db";
+    private const string ServidorPorDefecto = "localhost,1433";
+    private const string BasePorDefecto = "NamiSoft";
 
-    private const string LegacyDatabasePath = "Nomina.db";
+    private static string? _connectionString;
 
-    public static string ConnectionString => $"Data Source={DatabasePath}";
+    public static string ConnectionString => _connectionString ??= ResolverCadenaConexion();
 
     public static NominaContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<NominaContext>()
-            .UseSqlite(ConnectionString)
+            .UseSqlServer(ConnectionString)
             .Options;
         return new NominaContext(options);
     }
 
-    public static void EnsureCreated()
-    {
-        using var db = CreateContext();
-        db.Database.EnsureCreated();
-    }
-
     /// <summary>
-    /// Migra el archivo de la versión anterior. Hace checkpoint del WAL antes
-    /// de copiar para no perder los datos aún no consolidados en el .db.
-    /// </summary>
-    private static void CopiarBaseAnterior()
-    {
-        try
-        {
-            using var legacy = new Microsoft.Data.Sqlite.SqliteConnection(
-                $"Data Source={LegacyDatabasePath}");
-            legacy.Open();
-            using var checkpoint = legacy.CreateCommand();
-            checkpoint.CommandText = "PRAGMA wal_checkpoint(TRUNCATE);";
-            checkpoint.ExecuteNonQuery();
-        }
-        catch
-        {
-            // Si no se puede consolidar, se intenta la copia directa.
-        }
-
-        File.Copy(LegacyDatabasePath, DatabasePath, overwrite: false);
-    }
-    private const string InitialMigrationId = "20260101000000_InitialCreate";
-    private const string AuditMigrationId = "20260912120000_ChecadaOrigenAuditoria";
-    private const string ProductVersion = "8.0.11";
-
-    /// <summary>
-    /// Aplica migraciones pendientes sin destruir datos. Las BDs creadas con
-    /// EnsureCreated (sin historial) se registran como línea base y solo
-    /// reciben las migraciones que les falten.
+    /// Aplica las migraciones pendientes. Crea la base si no existe y actualiza
+    /// el esquema sin destruir datos.
     /// </summary>
     public static void EnsureMigrated()
     {
-        if (!File.Exists(DatabasePath) && File.Exists(LegacyDatabasePath))
-            CopiarBaseAnterior();
-
         using var db = CreateContext();
-        var connection = db.Database.GetDbConnection();
-        connection.Open();
-        try
+        db.Database.Migrate();
+    }
+
+    /// <summary>
+    /// Resuelve la cadena de conexión en este orden:
+    /// 1) NAMISOFT_DB_CONNECTION (cadena completa).
+    /// 2) Servidor/base por defecto + password de NAMISOFT_DB_PASSWORD.
+    /// 3) Servidor/base por defecto + password leída de un archivo local
+    ///    (mssql.pass junto al ejecutable o ~/.config/namisoft/mssql.pass).
+    /// La password nunca se escribe en el repositorio.
+    /// </summary>
+    private static string ResolverCadenaConexion()
+    {
+        var completa = Environment.GetEnvironmentVariable("NAMISOFT_DB_CONNECTION");
+        if (!string.IsNullOrWhiteSpace(completa))
+            return completa.Trim();
+
+        var password = Environment.GetEnvironmentVariable("NAMISOFT_DB_PASSWORD");
+        if (string.IsNullOrWhiteSpace(password))
+            password = LeerPasswordDeArchivo();
+
+        if (string.IsNullOrWhiteSpace(password))
+            throw new InvalidOperationException(
+                "No se encontró la contraseña de SQL Server. Defina NAMISOFT_DB_CONNECTION " +
+                "o NAMISOFT_DB_PASSWORD, o cree ~/.config/namisoft/mssql.pass.");
+
+        var servidor = Environment.GetEnvironmentVariable("NAMISOFT_DB_SERVER") ?? ServidorPorDefecto;
+        var baseDatos = Environment.GetEnvironmentVariable("NAMISOFT_DB_NAME") ?? BasePorDefecto;
+
+        return $"Server={servidor};Database={baseDatos};User Id=sa;Password={password.Trim()};" +
+               "Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True;Connect Timeout=15";
+    }
+
+    private static string? LeerPasswordDeArchivo()
+    {
+        foreach (var ruta in RutasPassword())
         {
-            using var cmd = connection.CreateCommand();
-            cmd.CommandText = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='__EFMigrationsHistory'";
-            bool hasHistory = Convert.ToInt32(cmd.ExecuteScalar()!) > 0;
-            if (hasHistory)
+            try
             {
-                connection.Close();
-                db.Database.Migrate();
-                return;
+                if (File.Exists(ruta))
+                {
+                    var contenido = File.ReadAllText(ruta).Trim();
+                    if (contenido.Length > 0)
+                        return contenido;
+                }
             }
-
-            cmd.CommandText = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='Checadas'";
-            bool hasTables = Convert.ToInt32(cmd.ExecuteScalar()!) > 0;
-            if (!hasTables)
+            catch (IOException)
             {
-                connection.Close();
-                db.Database.Migrate();
-                return;
+                // Archivo ilegible: se prueba la siguiente ubicación.
             }
-
-            cmd.CommandText = "SELECT count(*) FROM pragma_table_info('Checadas') WHERE name='Origen'";
-            bool hasAuditColumns = Convert.ToInt32(cmd.ExecuteScalar()!) > 0;
-            connection.Close();
-
-            db.Database.ExecuteSqlRaw(
-                "CREATE TABLE IF NOT EXISTS \"__EFMigrationsHistory\" " +
-                "(\"MigrationId\" TEXT NOT NULL CONSTRAINT \"PK___EFMigrationsHistory\" PRIMARY KEY, " +
-                "\"ProductVersion\" TEXT NOT NULL)");
-            db.Database.ExecuteSqlRaw(
-                "INSERT OR IGNORE INTO \"__EFMigrationsHistory\" (\"MigrationId\", \"ProductVersion\") VALUES ('" +
-                InitialMigrationId + "', '" + ProductVersion + "')");
-            if (hasAuditColumns)
-                db.Database.ExecuteSqlRaw(
-                    "INSERT OR IGNORE INTO \"__EFMigrationsHistory\" (\"MigrationId\", \"ProductVersion\") VALUES ('" +
-                    AuditMigrationId + "', '" + ProductVersion + "')");
-
-            db.Database.Migrate();
         }
-        finally
-        {
-            if (connection.State == System.Data.ConnectionState.Open)
-                connection.Close();
-        }
+
+        return null;
+    }
+
+    private static IEnumerable<string> RutasPassword()
+    {
+        yield return Path.Combine(AppContext.BaseDirectory, "mssql.pass");
+
+        var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        if (!string.IsNullOrWhiteSpace(home))
+            yield return Path.Combine(home, ".config", "namisoft", "mssql.pass");
     }
 }
