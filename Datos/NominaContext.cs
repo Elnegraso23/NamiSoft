@@ -27,7 +27,7 @@ public class NominaContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
-            optionsBuilder.UseSqlite(NominaDatabase.ConnectionString);
+            optionsBuilder.UseSqlServer(NominaDatabase.ConnectionString);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
