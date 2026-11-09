@@ -1,4 +1,4 @@
-param(
+﻿param(
     [string]$Servidor,
     [string]$BaseDatos,
     [string]$PasswordPlano,
@@ -13,7 +13,7 @@ function Escribir($texto, $color = "Gray") { Write-Host $texto -ForegroundColor 
 
 Escribir ""
 Escribir "==============================================" "Cyan"
-Escribir "  NamiSoft - Configuracion de base de datos" "Cyan"
+Escribir "  NamiSoft - Configuración de base de datos" "Cyan"
 Escribir "==============================================" "Cyan"
 Escribir ""
 
@@ -28,14 +28,14 @@ if ([string]::IsNullOrWhiteSpace($BaseDatos)) {
 
 $password = $PasswordPlano
 if ([string]::IsNullOrWhiteSpace($password)) {
-    $seguro = Read-Host "Contrasena del usuario sa" -AsSecureString
+    $seguro = Read-Host "Contraseña del usuario sa" -AsSecureString
     $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($seguro)
     try { $password = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr) }
     finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr) }
 }
 
 if ([string]::IsNullOrWhiteSpace($password)) {
-    Escribir "No se capturo ninguna contrasena. Cancelado." "Red"
+    Escribir "No se capturó ninguna contraseña. Cancelado." "Red"
     exit 1
 }
 
@@ -46,7 +46,7 @@ $puerto = 1433
 if ($partes.Count -gt 1) { [void][int]::TryParse($partes[1].Trim(), [ref]$puerto) }
 
 Escribir ""
-Escribir "Probando conexion TCP a $host_`:$puerto ..." "Yellow"
+Escribir "Probando conexión TCP a $host_`:$puerto ..." "Yellow"
 $tcp = New-Object System.Net.Sockets.TcpClient
 try {
     $ok = $tcp.BeginConnect($host_, $puerto, $null, $null).AsyncWaitHandle.WaitOne(5000, $false)
@@ -55,7 +55,7 @@ try {
 }
 catch {
     Escribir "  ADVERTENCIA: no se pudo abrir el puerto $puerto en $host_." "Red"
-    Escribir "  Verifica que SQL Server este encendido y que el firewall permita el puerto." "Red"
+    Escribir "  Verifica que SQL Server esté encendido y que el firewall permita el puerto." "Red"
 }
 finally { $tcp.Close() }
 
@@ -73,14 +73,14 @@ try {
 catch {
     $msg = $_.Exception.Message
     if ($msg -match "Cannot open database|no puede abrir la base|nombre de base de datos") {
-        Escribir "  Credenciales correctas; la base '$BaseDatos' aun no existe." "Yellow"
-        Escribir "  Se creara sola la primera vez que abras NamiSoft." "Yellow"
+        Escribir "  Credenciales correctas; la base '$BaseDatos' aún no existe." "Yellow"
+        Escribir "  Se creará sola la primera vez que abras NamiSoft." "Yellow"
         $credencialesOk = $true
     }
     else {
-        Escribir "  ADVERTENCIA: no se pudo validar el inicio de sesion:" "Red"
+        Escribir "  ADVERTENCIA: no se pudo validar el inicio de sesión:" "Red"
         Escribir "  $msg" "Red"
-        Escribir "  Se guardara la configuracion de todas formas." "Yellow"
+        Escribir "  Se guardará la configuración de todas formas." "Yellow"
     }
 }
 
@@ -98,19 +98,19 @@ try {
     $acl.SetAccessRule($regla)
     Set-Acl -Path $rutaPass -AclObject $acl
 }
-catch { Escribir "  (No se pudieron restringir permisos del archivo; no es critico.)" "DarkYellow" }
+catch { Escribir "  (No se pudieron restringir permisos del archivo; no es crítico.)" "DarkYellow" }
 
 [Environment]::SetEnvironmentVariable("NAMISOFT_DB_SERVER", $Servidor, "User")
 [Environment]::SetEnvironmentVariable("NAMISOFT_DB_NAME", $BaseDatos, "User")
 
 Escribir ""
-Escribir "Configuracion guardada:" "Green"
+Escribir "Configuración guardada:" "Green"
 Escribir "  Servidor : $Servidor"
 Escribir "  Base     : $BaseDatos"
 Escribir "  Archivo  : $rutaPass"
 Escribir ""
-Escribir "Abre NamiSoft desde el menu Inicio. La base y las tablas se crean solas." "Cyan"
-Escribir "Si la app ya estaba abierta, cierrala y vuelve a abrirla para tomar los cambios." "Cyan"
+Escribir "Abre NamiSoft desde el menú Inicio. La base y las tablas se crean solas." "Cyan"
+Escribir "Si la app ya estaba abierta, ciérrala y vuelve a abrirla para tomar los cambios." "Cyan"
 Escribir ""
 
 if (-not $Silencioso) { Read-Host "Presiona Enter para cerrar" | Out-Null }

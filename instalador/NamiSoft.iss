@@ -45,7 +45,7 @@ Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "Crear un acceso directo en el escritorio"; GroupDescription: "Accesos directos:"
-Name: "configbdd"; Description: "Configurar la conexion a SQL Server al terminar"; GroupDescription: "Base de datos:"
+Name: "configbdd"; Description: "Configurar la conexión a SQL Server al terminar"; GroupDescription: "Base de datos:"
 
 [Files]
 Source: "..\publish\win-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -57,18 +57,18 @@ Source: "..\sql\NamiSoft_SQLServer.sql"; DestDir: "{app}\sql"; Flags: ignorevers
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\NamiSoft.ico"
-Name: "{group}\Configurar base de datos"; Filename: "{app}\Configurar-BD.cmd"; IconFilename: "{app}\NamiSoft.ico"; Comment: "Apunta la aplicacion a tu servidor SQL Server"
-Name: "{group}\Carpeta de instalacion"; Filename: "{app}"
+Name: "{group}\Configurar base de datos"; Filename: "{app}\Configurar-BD.cmd"; IconFilename: "{app}\NamiSoft.ico"; Comment: "Apunta la aplicación a tu servidor SQL Server"
+Name: "{group}\Carpeta de instalación"; Filename: "{app}"
 Name: "{group}\Desinstalar {#MyAppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\NamiSoft.ico"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\Configurar-BD.cmd"; Description: "Configurar la conexion a SQL Server"; Tasks: configbdd; Flags: runasoriginaluser postinstall skipifsilent
+Filename: "{app}\Configurar-BD.cmd"; Description: "Configurar la conexión a SQL Server"; Tasks: configbdd; Flags: runasoriginaluser postinstall skipifsilent
 Filename: "{app}\{#MyAppExeName}"; Description: "Abrir {#MyAppName}"; Flags: nowait postinstall runasoriginaluser skipifsilent unchecked
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\logs"
 
 [Messages]
-es.WelcomeLabel2=Este asistente instalara [name/ver] en su equipo.%n%nLa aplicacion no necesita .NET instalado (viene completo), pero si necesita un servidor SQL Server 2022 accesible.%n%nSe recomienda cerrar cualquier otra aplicacion antes de continuar.
-es.FinishedLabel=La instalacion termino.%n%nSi aun no configuro la base de datos, use el acceso "Configurar base de datos" del menu Inicio antes de abrir NamiSoft.
+es.WelcomeLabel2=Este asistente instalará [name/ver] en su equipo.%n%nLa aplicación no necesita .NET instalado (viene completo), pero sí necesita un servidor SQL Server 2022 accesible.%n%nSe recomienda cerrar cualquier otra aplicación antes de continuar.
+es.FinishedLabel=La instalación terminó.%n%nSi aún no configuró la base de datos, use el acceso "Configurar base de datos" del menú Inicio antes de abrir NamiSoft.
