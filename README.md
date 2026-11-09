@@ -62,6 +62,51 @@ Publicar para Windows (plataforma comercial):
 
 En Windows PowerShell: `./run-windows.ps1`.
 
+## Instalador (Windows)
+
+El usuario final no necesita .NET ni Visual Studio: el instalador lleva la
+aplicación completa (self-contained, win-x64).
+
+Descarga directa: [NamiSoft-Setup-1.0.0-x64.exe](https://github.com/Elnegraso23/NamiSoft/releases/latest)
+(59 MB, SHA256 publicado en la release).
+
+Qué hace:
+
+- Instala en `C:\Program Files\NamiSoft` con asistente en español.
+- Accesos directos en el escritorio y en el menú Inicio (`NamiSoft`,
+  `Configurar base de datos`, `Desinstalar NamiSoft`).
+- Copia `LEEME.md` y `sql\NamiSoft_SQLServer.sql` para cargar el esquema desde
+  SSMS si se prefiere hacerlo a mano.
+- Al terminar puede lanzar **Configurar base de datos**, que pide servidor,
+  base y contraseña de `sa`, comprueba el puerto y las credenciales, guarda la
+  contraseña en `%USERPROFILE%\.config\namisoft\mssql.pass` y define
+  `NAMISOFT_DB_SERVER` / `NAMISOFT_DB_NAME` para el usuario. La contraseña
+  nunca viaja en el repositorio.
+- La base y las tablas se crean solas en el primer arranque (migraciones EF).
+
+Requisito en el equipo destino: **SQL Server 2022 accesible** en
+`localhost,1433` (o el servidor que se configure). Desinstalar: Panel de
+control → Aplicaciones, o el acceso del menú Inicio; el archivo
+`mssql.pass` del perfil del usuario se conserva a propósito.
+
+### Generar los artefactos
+
+```bash
+./build-installer.sh 1.0.0     # publish + ZIP portable (+ .exe si hay ISCC)
+```
+
+En Linux no hay Inno Setup: el `.exe` se compila en GitHub Actions
+(`windows-latest`) de forma manual, nunca en cada push:
+
+```bash
+gh workflow run instalador.yml -f version=1.0.0
+gh run download --name NamiSoft-Setup -D publish/instalador
+```
+
+Fuente del instalador: `instalador/NamiSoft.iss` (Inno Setup 6) y los scripts
+`Configurar-BD.cmd` / `Configurar-BD.ps1`. Publicar un tag `v*` compila el
+instalador y lo adjunta a la release automáticamente.
+
 Requisito: .NET SDK 10 (`dotnet --list-sdks` debe mostrar `10.x`).
 
 ## Módulos
