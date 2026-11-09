@@ -1,7 +1,8 @@
-# NamiSoft (interno, repo privado)
+# NamiSoft
 
 Sistema de control de asistencia y nómina semanal para operación con pantalla
 táctil en Windows, desarrollado y probado en Linux/Pop!_OS.
+Repositorio público: <https://github.com/Elnegraso23/NamiSoft>.
 
 Stack: C# + .NET 10 + Avalonia UI + MVVM (CommunityToolkit.Mvvm) +
 Entity Framework Core 10 + Microsoft SQL Server 2022. Sin componentes de pago
