@@ -1,0 +1,111 @@
+name: Prueba instalador Windows
+
+# Prueba real en Windows: instala en silencio, verifica archivos, accesos
+# directos y registro, y desinstala. Solo manual (workflow_dispatch).
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version a probar (ej. 1.0.0)"
+        required: true
+        default: "1.0.0"
+
+permissions:
+  contents: read
+
+jobs:
+  instalar-y-desinstalar:
+    runs-on: windows-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: .NET SDK 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Publicar self-contained win-x64
+        shell: pwsh
+        run: dotnet publish NamiSoft.csproj -c Release -r win-x64 --self-contained true -o publish/win-x64
+
+      - name: Instalar Inno Setup
+        shell: pwsh
+        run: |
+          choco install innosetup --no-progress -y
+          echo "ISCC=C:\Program Files (x86)\Inno Setup 6\ISCC.exe" >> $env:GITHUB_ENV
+
+      - name: Compilar instalador
+        shell: pwsh
+        run: |
+          & $env:ISCC "/DMyAppVersion=${{ github.event.inputs.version }}" "instalador\NamiSoft.iss"
+          Get-ChildItem publish/instalador | Format-Table Name, Length
+
+      - name: Instalar en silencio y verificar
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $setup = "publish\instalador\NamiSoft-Setup-${{ github.event.inputs.version }}-x64.exe"
+          $app   = "C:\Program Files\NamiSoft"
+          $log   = "C:\install-namisoft.log"
+
+          Write-Host "== Instalando: $setup"
+          $p = Start-Process -FilePath $setup -ArgumentList "/VERYSILENT","/SUPPRESSMSGBOXES","/NORESTART","/SP-","/LOG=$log","/TASKS=desktopicon" -Wait -PassThru
+          Write-Host "codigo de salida: $($p.ExitCode)"
+          if ($p.ExitCode -ne 0) { throw "El instalador devolvio $($p.ExitCode)" }
+
+          if (-not (Test-Path "$app\NamiSoft.exe")) { throw "No se encontro NamiSoft.exe instalado" }
+          $files = Get-ChildItem $app -Recurse -File
+          Write-Host "archivos instalados: $($files.Count)"
+          $mb = [math]::Round((($files | Measure-Object Length -Sum).Sum / 1MB), 1)
+          Write-Host "tamano instalado: $mb MB"
+          if ($files.Count -lt 200) { throw "Faltan archivos: solo $($files.Count)" }
+
+          foreach ($f in @("NamiSoft.exe","NamiSoft.dll","Configurar-BD.cmd","Configurar-BD.ps1","LEEME.md","sql\NamiSoft_SQLServer.sql")) {
+            if (-not (Test-Path (Join-Path $app $f))) { throw "Falta $f" }
+            Write-Host "  OK $f"
+          }
+
+          $startLnk = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\NamiSoft\NamiSoft.lnk"
+          $cfgLnk   = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\NamiSoft\Configurar base de datos.lnk"
+          $dstLnk   = "C:\Users\Public\Desktop\NamiSoft.lnk"
+          foreach ($lnk in @($startLnk,$cfgLnk,$dstLnk)) {
+            if (-not (Test-Path $lnk)) { throw "Falta el acceso directo: $lnk" }
+            $sh = New-Object -ComObject WScript.Shell
+            $t = $sh.CreateShortcut($lnk)
+            Write-Host ("  acceso OK: {0} -> {1}" -f (Split-Path $lnk -Leaf), $t.TargetPath)
+          }
+
+          $reg = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*" |
+                 Where-Object { $_.DisplayName -like "NamiSoft*" }
+          if (-not $reg) { throw "Sin entrada de desinstalacion en el registro" }
+          Write-Host "registro OK: $($reg.DisplayName) $($reg.DisplayVersion)"
+
+          $ver = (Get-Item "$app\NamiSoft.exe").VersionInfo
+          Write-Host "exe version: $($ver.FileVersion) / producto: $($ver.ProductName)"
+
+      - name: Desinstalar y verificar limpieza
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $app = "C:\Program Files\NamiSoft"
+          $un  = Join-Path $app "unins000.exe"
+          if (-not (Test-Path $un)) { throw "No hay desinstalador" }
+          $p = Start-Process -FilePath $un -ArgumentList "/VERYSILENT","/SUPPRESSMSGBOXES","/NORESTART" -Wait -PassThru
+          Write-Host "desinstalador codigo: $($p.ExitCode)"
+          Start-Sleep -Seconds 5
+          if (Test-Path "$app\NamiSoft.exe") { throw "NamiSoft.exe sigue ahi tras desinstalar" }
+          $reg = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*" |
+                 Where-Object { $_.DisplayName -like "NamiSoft*" }
+          if ($reg) { throw "La entrada del registro sobrevivio a la desinstalacion" }
+          Write-Host "desinstalacion limpia"
+
+      - name: Subir registros
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: registro-instalacion
+          path: C:\install-namisoft.log
+          if-no-files-found: warn
