@@ -70,5 +70,5 @@ Filename: "{app}\{#MyAppExeName}"; Description: "Abrir {#MyAppName}"; Flags: now
 Type: filesandordirs; Name: "{app}\logs"
 
 [Messages]
-Spanish.WelcomeLabel2=Este asistente instalara [name/ver] en su equipo.%n%nLa aplicacion no necesita .NET instalado (viene completo), pero si necesita un servidor SQL Server 2022 accesible.%n%nSe recomienda cerrar cualquier otra aplicacion antes de continuar.
-Spanish.FinishedLabel=La instalacion termino.%n%nSi aun no configuro la base de datos, use el acceso "Configurar base de datos" del menu Inicio antes de abrir NamiSoft.
+es.WelcomeLabel2=Este asistente instalara [name/ver] en su equipo.%n%nLa aplicacion no necesita .NET instalado (viene completo), pero si necesita un servidor SQL Server 2022 accesible.%n%nSe recomienda cerrar cualquier otra aplicacion antes de continuar.
+es.FinishedLabel=La instalacion termino.%n%nSi aun no configuro la base de datos, use el acceso "Configurar base de datos" del menu Inicio antes de abrir NamiSoft.
