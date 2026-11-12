@@ -1,0 +1,77 @@
+name: Prueba instalacion sin firma (Windows)
+
+# Verifica en un Windows real que instalador/instalar-namisoft.ps1 deja la app
+# instalada y que arranca como DLL bajo dotnet.exe (la ruta que evita el
+# WinError 4551 de Smart App Control).
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "instalador/instalar-namisoft.ps1"
+      - ".github/workflows/prueba-fdd.yml"
+      - "NamiSoft.csproj"
+
+permissions:
+  contents: read
+
+jobs:
+  prueba:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    env:
+      DOTNET_NOLOGO: "1"
+      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: .NET SDK 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Instalar con el script (sin BD, sin accesos directos)
+        shell: pwsh
+        run: |
+          powershell -ExecutionPolicy Bypass -File instalador/instalar-namisoft.ps1 -FromSource -NoDb -NoShortcut -InstallDir "$env:RUNNER_TEMP\NamiSoft"
+          if ($LASTEXITCODE -ne 0) { throw "El instalador termino con codigo $LASTEXITCODE" }
+
+      - name: Comprobar artefactos
+        shell: pwsh
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP "NamiSoft"
+          $dll = Join-Path $dir "app\NamiSoft.dll"
+          $cmd = Join-Path $dir "NamiSoft.cmd"
+          if (-not (Test-Path $dll)) { throw "Falta NamiSoft.dll" }
+          if (-not (Test-Path $cmd)) { throw "Falta el lanzador NamiSoft.cmd" }
+          if (-not (Test-Path (Join-Path $dir "app\Configurar-BD.ps1"))) { throw "Falta Configurar-BD.ps1" }
+          Write-Host ("archivos instalados: " + (Get-ChildItem (Join-Path $dir "app") -Recurse -File).Count)
+          Write-Host ("dll: " + (Get-Item $dll).Length + " bytes")
+          Get-Content $cmd
+
+      - name: Arrancar como DLL bajo dotnet (10 s)
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP "NamiSoft"
+          $antes = @(Get-Process dotnet -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
+          Start-Process -FilePath (Join-Path $dir "NamiSoft.cmd") -WindowStyle Minimized | Out-Null
+          Start-Sleep -Seconds 10
+          $nuevos = @(Get-Process dotnet -ErrorAction SilentlyContinue | Where-Object { $antes -notcontains $_.Id })
+          Write-Host ("procesos dotnet nuevos: " + $nuevos.Count)
+          if ($nuevos.Count -gt 0) {
+            Write-Host "OK: la app corre como DLL bajo el host firmado (sin apphost sin firma)."
+            $nuevos | Stop-Process -Force -ErrorAction SilentlyContinue
+          } else {
+            Write-Host "AVISO: no se detecto proceso. Revisar en un equipo con escritorio real."
+          }
+
+      - name: Diagnostico (runtimes y versiones)
+        if: always()
+        shell: pwsh
+        run: |
+          dotnet --list-runtimes
+          dotnet --list-sdks

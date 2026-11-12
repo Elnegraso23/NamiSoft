@@ -54,6 +54,7 @@ $ErrorActionPreference = "Stop"
 $RepoUrl   = "https://codeload.github.com/Elnegraso23/NamiSoft/zip/refs/heads/main"
 $DotnetUrl = "https://dot.net/v1/dotnet-install.ps1"
 $perfil    = if ($env:USERPROFILE) { $env:USERPROFILE } else { $HOME }
+$tmpBase   = if ($tmpBase) { $tmpBase } else { [IO.Path]::GetTempPath() }
 
 function Info($m) { Write-Host "[i]  $m" -ForegroundColor Cyan }
 function Ok($m)   { Write-Host "[OK] $m" -ForegroundColor Green }
@@ -107,7 +108,7 @@ if (-not $dotnet -and (Test-Path $localDotnet)) {
 
 if (-not $dotnet) {
     Info "No hay runtime .NET 10 disponible. Instalando copia local (sin admin)..."
-    $tmp = Join-Path $env:TEMP ("namisoft-" + [guid]::NewGuid().ToString("N"))
+    $tmp = Join-Path $tmpBase ("namisoft-" + [guid]::NewGuid().ToString("N"))
     New-Item -ItemType Directory -Force -Path $tmp | Out-Null
     $script = Join-Path $tmp "dotnet-install.ps1"
     try {
@@ -136,7 +137,7 @@ function Build-FromSource {
 
     if (-not $sdkOk) {
         Info "Instalando SDK .NET 10 local (necesario para compilar)..."
-        $tmp = Join-Path $env:TEMP ("namisoft-sdk-" + [guid]::NewGuid().ToString("N"))
+        $tmp = Join-Path $tmpBase ("namisoft-sdk-" + [guid]::NewGuid().ToString("N"))
         New-Item -ItemType Directory -Force -Path $tmp | Out-Null
         $script = Join-Path $tmp "dotnet-install.ps1"
         Invoke-WebRequest -Uri $DotnetUrl -OutFile $script -UseBasicParsing
@@ -146,10 +147,10 @@ function Build-FromSource {
         Ok "SDK .NET 10 instalado."
     }
 
-    $srcZip = Join-Path $env:TEMP ("namisoft-src-" + [guid]::NewGuid().ToString("N") + ".zip")
+    $srcZip = Join-Path $tmpBase ("namisoft-src-" + [guid]::NewGuid().ToString("N") + ".zip")
     Info "Descargando codigo fuente..."
     Invoke-WebRequest -Uri $RepoUrl -OutFile $srcZip -UseBasicParsing
-    $expanded = Join-Path $env:TEMP ("namisoft-src-" + [guid]::NewGuid().ToString("N"))
+    $expanded = Join-Path $tmpBase ("namisoft-src-" + [guid]::NewGuid().ToString("N"))
     Expand-Archive -Path $srcZip -DestinationPath $expanded -Force
     $proj = (Get-ChildItem -Path $expanded -Recurse -Filter "NamiSoft.csproj" | Select-Object -First 1)
     if (-not $proj) { Die "No encontre NamiSoft.csproj en el codigo fuente." }
@@ -200,7 +201,7 @@ else {
     Info "Buscando el paquete FDD en la ultima release de GitHub..."
     $url = Get-ReleaseAsset
     if ($url) {
-        $destino = Join-Path $env:TEMP ("namisoft-fdd-" + [guid]::NewGuid().ToString("N") + ".zip")
+        $destino = Join-Path $tmpBase ("namisoft-fdd-" + [guid]::NewGuid().ToString("N") + ".zip")
         Info "Descargando $url"
         Invoke-WebRequest -Uri $url -OutFile $destino -UseBasicParsing
         Expand-Archive -Path $destino -DestinationPath $appDir -Force
