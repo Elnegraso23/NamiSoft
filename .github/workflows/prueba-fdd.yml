@@ -56,18 +56,30 @@ jobs:
         continue-on-error: true
         shell: pwsh
         run: |
-          $dir = Join-Path $env:RUNNER_TEMP "NamiSoft"
-          $antes = @(Get-Process dotnet -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
-          Start-Process -FilePath (Join-Path $dir "NamiSoft.cmd") -WindowStyle Minimized | Out-Null
+          $dir  = Join-Path $env:RUNNER_TEMP "NamiSoft"
+          $dll  = Join-Path $dir "app\NamiSoft.dll"
+          $out  = Join-Path $env:RUNNER_TEMP "app.out"
+          $err  = Join-Path $env:RUNNER_TEMP "app.err"
+          $p = Start-Process -FilePath "dotnet" -ArgumentList "`"$dll`"" -PassThru `
+                 -RedirectStandardOutput $out -RedirectStandardError $err -WindowStyle Minimized
           Start-Sleep -Seconds 10
-          $nuevos = @(Get-Process dotnet -ErrorAction SilentlyContinue | Where-Object { $antes -notcontains $_.Id })
-          Write-Host ("procesos dotnet nuevos: " + $nuevos.Count)
-          if ($nuevos.Count -gt 0) {
-            Write-Host "OK: la app corre como DLL bajo el host firmado (sin apphost sin firma)."
-            $nuevos | Stop-Process -Force -ErrorAction SilentlyContinue
+          $vivo = -not $p.HasExited
+          Write-Host ("proceso dotnet vivo tras 10 s: " + $vivo)
+          if ($vivo) {
+            Write-Host "OK: la DLL corre bajo el host firmado (no se ejecuto ningun apphost sin firma)."
+            Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
           } else {
-            Write-Host "AVISO: no se detecto proceso. Revisar en un equipo con escritorio real."
+            Write-Host ("codigo de salida: " + $p.ExitCode)
           }
+          foreach ($f in @($out, $err)) {
+            if ((Test-Path $f) -and (Get-Item $f).Length -gt 0) {
+              Write-Host ("--- " + $f + " ---")
+              Get-Content $f -Tail 40
+            }
+          }
+          Get-WinEvent -LogName Application -MaxEvents 30 -ErrorAction SilentlyContinue |
+            Where-Object { $_.ProviderName -match "NET Runtime|Application Error|Avalonia" } |
+            Select-Object -First 2 | Format-List TimeCreated, ProviderName, Message
 
       - name: Diagnostico (runtimes y versiones)
         if: always()
