@@ -71,6 +71,16 @@ jobs:
           } else {
             Write-Host ("codigo de salida: " + $p.ExitCode)
           }
+          # En el runner no hay SQL Server ni contrasena configurada: si el error es
+          # exactamente ese, la app YA arranco (llego a Avalonia.AppBuilder.Setup).
+          $texto = if (Test-Path $err) { Get-Content $err -Raw } else { "" }
+          if ($texto -match "contrase" -and $texto -match "SQL Server") {
+            Write-Host "OK: la app arranco bajo dotnet y solo falta la configuracion de la BD (esperado en CI)."
+          } elseif ($vivo) {
+            Write-Host "OK: proceso vivo."
+          } else {
+            Write-Host "REVISAR: la app no arranco y el error no es de configuracion de BD."
+          }
           foreach ($f in @($out, $err)) {
             if ((Test-Path $f) -and (Get-Item $f).Length -gt 0) {
               Write-Host ("--- " + $f + " ---")

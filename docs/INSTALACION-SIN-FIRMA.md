@@ -130,7 +130,7 @@ de la aplicación aparece sin error.
 | `Login failed for user 'sa'` | SQL Server solo con autenticación Windows, o password incorrecta | usar `-DbConnection ...Trusted_Connection=True...` |
 | `network-related or instance-specific error` | instancia con nombre o TCP/1433 deshabilitado | `-DbServer "localhost\SQLEXPRESS"` o habilitar TCP en el Administrador de configuración de SQL Server |
 | Bloqueo persiste con SAC apagado | directiva WDAC/AppLocker de un equipo administrado (escuela/empresa) | pedir la excepción a TI; el script no puede saltarse una directiva corporativa |
-| La app abre y cierra al instante | conexión a BD rechazada | revisar el mensaje en consola: `...\app\Configurar-BD.cmd` y reintentar |
+| La app cierra sin mostrar ventana | falta la contraseña de SQL Server: la app la exige al arrancar y aborta en `AppBuilder.Setup` | ejecutar `app\Configurar-BD.cmd` o reinstalar con `-DbServer`/`-DbPassword` (o `-DbConnection`) |
 
 ## Lo que NO se debe hacer
 
