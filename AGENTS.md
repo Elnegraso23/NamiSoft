@@ -45,3 +45,30 @@ dotnet run
 ```
 
 Para cambios de lógica de nómina, agregar/ejecutar pruebas antes de aceptar la modificación.
+
+## Instalación en Windows con Smart App Control activo
+
+Si el usuario reporta `[WinError 4551] Una directiva de Control de aplicaciones
+bloqueó este archivo`, no es antivirus ni SmartScreen: es **SAC** bloqueando un
+binario sin firma. No firmes, no repackees, no renombres y no desactives SAC en
+equipos ajenos. La ruta soportada es instalar framework-dependent y lanzar como
+DLL bajo `dotnet.exe`:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\instalador\instalar-namisoft.ps1 -FromRelease -Test
+```
+
+Reglas duras para el agente:
+
+- Nunca ejecutes `%LOCALAPPDATA%\NamiSoft\app\NamiSoft.exe`: es el apphost sin
+  firma y vuelve a disparar el 4551. El lanzador válido es
+  `%LOCALAPPDATA%\NamiSoft\NamiSoft.cmd`.
+- No modifiques `instalador/instalar-namisoft.ps1` sin probarlo: el flujo
+  completo está descrito en `docs/INSTALACION-SIN-FIRMA.md` (incluye criterios
+  de aceptación y tabla de diagnóstico).
+- El ZIP que consume el instalador lo publica `.github/workflows/fdd.yml`
+  (`NamiSoft-<tag>-win-x64-fdd.zip`). Si falta, el script compila desde fuente
+  solo; no hace falta firmar nada.
+- La cadena de conexión se resuelve en `Datos/NominaDatabase.cs`:
+  `NAMISOFT_DB_CONNECTION` > `NAMISOFT_DB_SERVER`/`NAMISOFT_DB_NAME` +
+  `%USERPROFILE%\.config\namisoft\mssql.pass` > `localhost,1433`/`NamiSoft`.

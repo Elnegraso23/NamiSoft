@@ -109,6 +109,26 @@ instalador y lo adjunta a la release automáticamente.
 
 Requisito: .NET SDK 10 (`dotnet --list-sdks` debe mostrar `10.x`).
 
+## Instalacion en Windows 11 con Smart App Control (WinError 4551)
+
+El instalador de Inno Setup esta sin firmar: en equipos con **Smart App Control**
+activo Windows lo bloquea con `[WinError 4551] Una directiva de Control de
+aplicaciones bloqueo este archivo`. No hay que firmar ni desactivar SAC: se
+instala la app **framework-dependent** y se lanza como DLL bajo `dotnet.exe`
+(host firmado por Microsoft).
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\instalador\instalar-namisoft.ps1 -FromRelease -Test
+```
+
+Con SQL Server ya instalado, agregar `-DbServer "localhost,1433"` (login `sa`) o
+`-DbConnection "Server=localhost;Database=NamiSoft;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True"`
+(autenticacion de Windows). Instala en `%LOCALAPPDATA%\NamiSoft`, sin admin, y
+crea los accesos del menu Inicio.
+
+Guia completa (diagnostico, verificacion y criterios de aceptacion):
+[docs/INSTALACION-SIN-FIRMA.md](docs/INSTALACION-SIN-FIRMA.md)
+
 ## Módulos
 
 | Sección | Qué hace |

@@ -1,0 +1,70 @@
+name: Paquete FDD (instalacion sin firma)
+
+# Compila la app framework-dependent y adjunta el ZIP a la release.
+# Ese ZIP es el que usa instalador/instalar-namisoft.ps1 para instalar en
+# Windows 11 con Smart App Control activo (evita el WinError 4551).
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag de la release destino (ej. v1.0.0)"
+        required: true
+        default: "v1.0.0"
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  fdd:
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: .NET SDK 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Publicar framework-dependent win-x64
+        shell: pwsh
+        run: |
+          dotnet publish NamiSoft.csproj -c Release -r win-x64 --no-self-contained -p:PublishSingleFile=false -o publish/fdd
+          if (-not (Test-Path "publish/fdd/NamiSoft.dll")) { throw "No se genero NamiSoft.dll" }
+          Copy-Item instalador/Configurar-BD.ps1, instalador/Configurar-BD.cmd, instalador/NamiSoft.ico, instalador/instalar-namisoft.ps1 publish/fdd/
+          New-Item -ItemType Directory -Force publish/fdd/sql | Out-Null
+          Copy-Item sql/NamiSoft_SQLServer.sql publish/fdd/sql/
+          Copy-Item README.md publish/fdd/LEEME.md
+          Get-ChildItem publish/fdd | Measure-Object | Select-Object -ExpandProperty Count
+
+      - name: Empaquetar ZIP
+        shell: pwsh
+        run: |
+          $tag = if ("${{ github.event.inputs.tag }}") { "${{ github.event.inputs.tag }}" } else { "${{ github.ref_name }}" }
+          $ver = "$tag".TrimStart("v")
+          $zip = "publish/NamiSoft-$ver-win-x64-fdd.zip"
+          Compress-Archive -Path publish/fdd/* -DestinationPath $zip -Force
+          Get-FileHash $zip -Algorithm SHA256 | Format-List
+          "ZIP=$zip" >> $env:GITHUB_ENV
+          "TAG=$tag" >> $env:GITHUB_ENV
+
+      - name: Subir artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: NamiSoft-FDD
+          path: publish/*.zip
+          if-no-files-found: error
+
+      - name: Adjuntar a la release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view $env:TAG --repo ${{ github.repository }} | Out-Null
+          gh release upload $env:TAG $env:ZIP --repo ${{ github.repository }} --clobber
