@@ -19,76 +19,114 @@ Entity Framework Core 10 + Microsoft SQL Server 2022. Sin componentes de pago
   estados vacíos accionables, E/S pesada fuera del hilo UI.
 - Compila en `net10.0` con 0 errores. Verificado con capturas reales en Linux.
 
-## Cómo correrlo
-
-Requisitos:
-
-1. .NET SDK 10 (`dotnet --list-sdks` debe mostrar `10.x`).
-2. SQL Server 2022 accesible en `localhost,1433` (ver abajo).
-3. La contraseña de `sa` disponible por variable de entorno o archivo local.
-
-```bash
-# 1) SQL Server 2022 en contenedor (rootless)
-podman run -d --name mssql-bd --restart=unless-stopped \
-  -e ACCEPT_EULA=Y -e "MSSQL_SA_PASSWORD=<password>" -e MSSQL_PID=Developer \
-  -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
-
-# 2) Cadena de conexión (una de las dos opciones)
-export NAMISOFT_DB_CONNECTION="Server=localhost,1433;Database=NamiSoft;User Id=sa;Password=<password>;Encrypt=True;TrustServerCertificate=True"
-# o bien:
-export NAMISOFT_DB_PASSWORD="<password>"
-
-# 3) Ejecutar (aplica migraciones automáticamente al arrancar)
-./run-linux.sh        # restore + build + run
-```
-
-También se puede guardar solo la contraseña en `~/.config/namisoft/mssql.pass`
-(permisos `600`) y dejar que la app arme la cadena con los valores por defecto.
-La contraseña **nunca** se versiona en el repositorio.
-
-Esquema manual para SSMS: `sql/NamiSoft_SQLServer.sql` (crea la base, las tablas
-y datos iniciales; es idempotente).
-
-```bash
-dotnet build NamiSoft.csproj
-dotnet run
-```
-
-En Windows PowerShell (desarrollo): `./run-windows.ps1`.
-
 ## Instalación rápida (Linux y Windows)
 
-No necesitas tener .NET SDK ni Visual Studio instalados: los instaladores
-descargan la versión compilada (`self-contained`) desde [GitHub Releases](https://github.com/Elnegraso23/NamiSoft/releases/latest).
+No necesitas instalar .NET SDK ni Visual Studio: los instaladores descargan
+la versión compilada (`self-contained`) desde
+[GitHub Releases](https://github.com/Elnegraso23/NamiSoft/releases/latest).
 
-### Linux
+### 1. Instalar la aplicación
+
+- **Linux (terminal):**
+  ```bash
+  curl -fsSL https://raw.githubusercontent.com/Elnegraso23/NamiSoft/main/install.sh | bash
+  ```
+  Instala en `~/.local/share/NamiSoft`, crea el comando `namisoft` en
+  `~/.local/bin/namisoft` y agrega **NamiSoft** al menú de aplicaciones.
+
+- **Windows (PowerShell):**
+  ```powershell
+  irm https://raw.githubusercontent.com/Elnegraso23/NamiSoft/main/install.ps1 | iex
+  ```
+  Instala en `%LOCALAPPDATA%\NamiSoft` y crea accesos directos en el
+  Escritorio y en el Menú Inicio.
+
+### 2. Configurar SQL Server 2022 (obligatorio antes del primer arranque)
+
+NamiSoft usa **Microsoft SQL Server 2022** y crea la base de datos y las
+tablas automáticamente al iniciar (`EnsureMigrated`).
+
+#### Opción A: Linux (contenedor con Podman o Docker)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Elnegraso23/NamiSoft/main/install.sh | bash
+# 1) Levantar SQL Server 2022 en el puerto 1433
+podman run -d --name mssql-bd --restart=unless-stopped \
+  -e ACCEPT_EULA=Y -e "MSSQL_SA_PASSWORD=<tu_password>" -e MSSQL_PID=Developer \
+  -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
+
+# 2) Guardar la contraseña para que NamiSoft la lea automáticamente
+mkdir -p ~/.config/namisoft
+printf '%s' '<tu_password>' > ~/.config/namisoft/mssql.pass
+chmod 600 ~/.config/namisoft/mssql.pass
 ```
 
-- Instala en `~/.local/share/NamiSoft`.
-- Crea el comando `namisoft` en `~/.local/bin/namisoft` y el acceso directo **NamiSoft** en el menú de aplicaciones.
+*(Si usas Docker, reemplaza `podman` por `docker`.)*
 
-### Windows (PowerShell)
+#### Opción B: Windows (SQL Server local o en red)
 
-```powershell
-irm https://raw.githubusercontent.com/Elnegraso23/NamiSoft/main/install.ps1 | iex
-```
+- **Con usuario `sa`:** guarda la contraseña en
+  `%USERPROFILE%\.config\namisoft\mssql.pass` (en PowerShell):
+  ```powershell
+  New-Item -ItemType Directory -Path "$env:USERPROFILE\.config\namisoft" -Force | Out-Null
+  Set-Content -Path "$env:USERPROFILE\.config\namisoft\mssql.pass" -Value "<tu_password>" -NoNewline
+  ```
+  Si el servidor está en otro equipo o usas otro nombre de base, define las
+  variables de entorno de usuario `NAMISOFT_DB_SERVER` (por defecto
+  `localhost,1433`) y `NAMISOFT_DB_NAME` (por defecto `NamiSoft`).
 
-- Instala en `%LOCALAPPDATA%\NamiSoft`.
-- Crea accesos directos en el Escritorio y en el Menú Inicio.
+- **Con autenticación de Windows (sin usuario `sa`):** define la cadena
+  completa en la variable de entorno `NAMISOFT_DB_CONNECTION`:
+  ```powershell
+  [Environment]::SetEnvironmentVariable(
+    "NAMISOFT_DB_CONNECTION",
+    "Server=localhost;Database=NamiSoft;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True",
+    "User"
+  )
+  ```
+
+Orden de resolución de conexión en `Datos/NominaDatabase.cs`:
+1. `NAMISOFT_DB_CONNECTION` (cadena completa).
+2. `NAMISOFT_DB_PASSWORD` (+ `NAMISOFT_DB_SERVER` / `NAMISOFT_DB_NAME` opcionales).
+3. Archivo `mssql.pass` junto al ejecutable o en `~/.config/namisoft/mssql.pass` (`%USERPROFILE%\.config\namisoft\mssql.pass`).
+
+*(Opcional)* Esquema manual para SSMS: `sql/NamiSoft_SQLServer.sql` (crea la
+base, tablas y datos iniciales de forma idempotente).
+
+### 3. Abrir NamiSoft
+
+- **Linux:** desde el menú de aplicaciones (**NamiSoft**) o ejecutando `namisoft`.
+- **Windows:** desde el acceso directo del Escritorio o Menú Inicio.
 
 ### Publicar una nueva versión
 
-El workflow `.github/workflows/release.yml` compila y publica automáticamente los paquetes `NamiSoft-linux-x64.tar.gz` y `NamiSoft-win-x64.zip` al subir un tag `v*` (o ejecutándolo manualmente desde *Actions*):
+El workflow `.github/workflows/release.yml` compila y publica automáticamente
+`NamiSoft-linux-x64.tar.gz` y `NamiSoft-win-x64.zip` al subir un tag `v*`
+(o ejecutándolo manualmente desde *Actions*):
 
 ```bash
 git tag v1.0.2
 git push origin v1.0.2
 ```
 
-Requisito en el equipo destino: **SQL Server 2022 accesible** en `localhost,1433` (o configurado mediante `NAMISOFT_DB_CONNECTION` / `NAMISOFT_DB_PASSWORD` / `mssql.pass`). La base y las tablas se crean automáticamente en el primer arranque.
+## Cómo correrlo en desarrollo (desde código fuente)
+
+Requisitos: .NET SDK 10 (`dotnet --list-sdks` debe mostrar `10.x`) y SQL Server
+2022 configurado como en el paso anterior.
+
+```bash
+./run-linux.sh        # Linux: restore + build + run
+```
+
+```powershell
+./run-windows.ps1     # Windows PowerShell: restore + build + run
+```
+
+O manualmente:
+
+```bash
+dotnet build NamiSoft.csproj
+dotnet run
+```
 
 ## Módulos
 
@@ -106,13 +144,13 @@ Requisito en el equipo destino: **SQL Server 2022 accesible** en `localhost,1433
 
 ## Datos y migraciones
 
-- Archivo local: `NamiSoft.db` (gitignored). Si existe `Nomina.db` anterior,
-  se copia sola en el primer arranque (con checkpoint WAL para no perder datos).
-- Acceso centralizado en `Datos/NominaDatabase.cs`. La UI no conoce rutas ni SQL.
-- Migraciones en `Datos/Migrations/`. BDs viejas (sin historial) se registran
-  como línea base y solo reciben lo que les falte.
+- Motor: **Microsoft SQL Server 2022** (`Microsoft.EntityFrameworkCore.SqlServer` 10.x).
+- Acceso centralizado en `Datos/NominaDatabase.cs`. La UI no conoce cadenas de
+  conexión ni SQL.
+- Migraciones EF Core en `Datos/Migrations/` (`EnsureMigrated` crea la base y
+  aplica cambios pendientes al arrancar sin pérdida de datos).
 - Dinero siempre en `decimal`. `Guardar` de empleado es atómico (transacción).
-- Haz copia de `NamiSoft.db` antes de probar cambios de nómina con datos reales.
+- La contraseña nunca se versiona en el repositorio (`mssql.pass` o variables de entorno).
 
 ## Estructura
 
@@ -133,10 +171,9 @@ hacia la UI; operaciones pesadas con `Task.Run`; botones táctiles ≥48px.
 
 ## Pendientes conocidos
 
-- Subir `Microsoft.EntityFrameworkCore.Sqlite` 8.0.11 → 10.x (aviso NU1903).
-- Mover la BD a carpeta de datos de aplicación + respaldos automáticos.
+- Respaldos automáticos programados de la base de datos SQL Server.
 - Pruebas automáticas de `MotorNomina` y `NominaService`.
-- Publicar `win-x64` y probar en el equipo Windows real.
+- Probar el instalador universal `install.ps1` en el equipo Windows real.
 - Comparar nómina WinForms vs NamiSoft con la misma BD antes de producción.
 - Ver detalle de avance por fase en `MIGRACION.md`.
 
