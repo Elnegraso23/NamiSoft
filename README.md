@@ -54,80 +54,41 @@ dotnet build NamiSoft.csproj
 dotnet run
 ```
 
-Publicar para Windows (plataforma comercial):
+En Windows PowerShell (desarrollo): `./run-windows.ps1`.
+
+## Instalación rápida (Linux y Windows)
+
+No necesitas tener .NET SDK ni Visual Studio instalados: los instaladores
+descargan la versión compilada (`self-contained`) desde [GitHub Releases](https://github.com/Elnegraso23/NamiSoft/releases/latest).
+
+### Linux
 
 ```bash
-./publish-windows.sh  # → publish/win-x64 (self-contained)
+curl -fsSL https://raw.githubusercontent.com/Elnegraso23/NamiSoft/main/install.sh | bash
 ```
 
-En Windows PowerShell: `./run-windows.ps1`.
+- Instala en `~/.local/share/NamiSoft`.
+- Crea el comando `namisoft` en `~/.local/bin/namisoft` y el acceso directo **NamiSoft** en el menú de aplicaciones.
 
-## Instalador (Windows)
-
-El usuario final no necesita .NET ni Visual Studio: el instalador lleva la
-aplicación completa (self-contained, win-x64).
-
-Descarga directa: [NamiSoft-Setup-1.0.0-x64.exe](https://github.com/Elnegraso23/NamiSoft/releases/latest)
-(59 MB, SHA256 publicado en la release).
-
-Qué hace:
-
-- Instala en `C:\Program Files\NamiSoft` con asistente en español.
-- Accesos directos en el escritorio y en el menú Inicio (`NamiSoft`,
-  `Configurar base de datos`, `Desinstalar NamiSoft`).
-- Copia `LEEME.md` y `sql\NamiSoft_SQLServer.sql` para cargar el esquema desde
-  SSMS si se prefiere hacerlo a mano.
-- Al terminar puede lanzar **Configurar base de datos**, que pide servidor,
-  base y contraseña de `sa`, comprueba el puerto y las credenciales, guarda la
-  contraseña en `%USERPROFILE%\.config\namisoft\mssql.pass` y define
-  `NAMISOFT_DB_SERVER` / `NAMISOFT_DB_NAME` para el usuario. La contraseña
-  nunca viaja en el repositorio.
-- La base y las tablas se crean solas en el primer arranque (migraciones EF).
-
-Requisito en el equipo destino: **SQL Server 2022 accesible** en
-`localhost,1433` (o el servidor que se configure). Desinstalar: Panel de
-control → Aplicaciones, o el acceso del menú Inicio; el archivo
-`mssql.pass` del perfil del usuario se conserva a propósito.
-
-### Generar los artefactos
-
-```bash
-./build-installer.sh 1.0.0     # publish + ZIP portable (+ .exe si hay ISCC)
-```
-
-En Linux no hay Inno Setup: el `.exe` se compila en GitHub Actions
-(`windows-latest`) de forma manual, nunca en cada push:
-
-```bash
-gh workflow run instalador.yml -f version=1.0.0
-gh run download --name NamiSoft-Setup -D publish/instalador
-```
-
-Fuente del instalador: `instalador/NamiSoft.iss` (Inno Setup 6) y los scripts
-`Configurar-BD.cmd` / `Configurar-BD.ps1`. Publicar un tag `v*` compila el
-instalador y lo adjunta a la release automáticamente.
-
-Requisito: .NET SDK 10 (`dotnet --list-sdks` debe mostrar `10.x`).
-
-## Instalacion en Windows 11 con Smart App Control (WinError 4551)
-
-El instalador de Inno Setup esta sin firmar: en equipos con **Smart App Control**
-activo Windows lo bloquea con `[WinError 4551] Una directiva de Control de
-aplicaciones bloqueo este archivo`. No hay que firmar ni desactivar SAC: se
-instala la app **framework-dependent** y se lanza como DLL bajo `dotnet.exe`
-(host firmado por Microsoft).
+### Windows (PowerShell)
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\instalador\instalar-namisoft.ps1 -FromRelease -Test
+irm https://raw.githubusercontent.com/Elnegraso23/NamiSoft/main/install.ps1 | iex
 ```
 
-Con SQL Server ya instalado, agregar `-DbServer "localhost,1433"` (login `sa`) o
-`-DbConnection "Server=localhost;Database=NamiSoft;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True"`
-(autenticacion de Windows). Instala en `%LOCALAPPDATA%\NamiSoft`, sin admin, y
-crea los accesos del menu Inicio.
+- Instala en `%LOCALAPPDATA%\NamiSoft`.
+- Crea accesos directos en el Escritorio y en el Menú Inicio.
 
-Guia completa (diagnostico, verificacion y criterios de aceptacion):
-[docs/INSTALACION-SIN-FIRMA.md](docs/INSTALACION-SIN-FIRMA.md)
+### Publicar una nueva versión
+
+El workflow `.github/workflows/release.yml` compila y publica automáticamente los paquetes `NamiSoft-linux-x64.tar.gz` y `NamiSoft-win-x64.zip` al subir un tag `v*` (o ejecutándolo manualmente desde *Actions*):
+
+```bash
+git tag v1.0.2
+git push origin v1.0.2
+```
+
+Requisito en el equipo destino: **SQL Server 2022 accesible** en `localhost,1433` (o configurado mediante `NAMISOFT_DB_CONNECTION` / `NAMISOFT_DB_PASSWORD` / `mssql.pass`). La base y las tablas se crean automáticamente en el primer arranque.
 
 ## Módulos
 
