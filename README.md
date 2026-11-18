@@ -8,6 +8,17 @@ Stack: C# + .NET 10 + Avalonia UI + MVVM (CommunityToolkit.Mvvm) +
 Entity Framework Core 10 + Microsoft SQL Server 2022. Sin componentes de pago
 (ver `THIRD_PARTY_LICENSES.md`).
 
+## Capturas
+
+### Resumen del sistema
+![Resumen del sistema](docs/capturas/01-resumen.png)
+
+### Asistencia (reloj táctil)
+![Asistencia](docs/capturas/02-asistencia.png)
+
+### Nómina semanal
+![Nómina semanal](docs/capturas/03-nomina.png)
+
 ## Estado actual (2026-09-12)
 
 - Migración WinForms → Avalonia completa. Cero `System.Windows.Forms`.
