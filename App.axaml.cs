@@ -20,16 +20,32 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            NominaDatabase.EnsureMigrated();
-
-            var mainWindow = new MainWindow();
-            var dialogs = new AppDialogService(() => mainWindow);
-            var appState = new AppState();
-
-            mainWindow.DataContext = new MainWindowViewModel(dialogs, appState);
-            desktop.MainWindow = mainWindow;
+            try
+            {
+                NominaDatabase.EnsureMigrated();
+                desktop.MainWindow = CrearVentanaPrincipal();
+            }
+            catch (Exception ex)
+            {
+                desktop.MainWindow = new DatabaseSetupWindow(ex.Message, () =>
+                {
+                    var mainWindow = CrearVentanaPrincipal();
+                    desktop.MainWindow = mainWindow;
+                    mainWindow.Show();
+                });
+            }
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private static MainWindow CrearVentanaPrincipal()
+    {
+        var mainWindow = new MainWindow();
+        var dialogs = new AppDialogService(() => mainWindow);
+        var appState = new AppState();
+
+        mainWindow.DataContext = new MainWindowViewModel(dialogs, appState);
+        return mainWindow;
     }
 }

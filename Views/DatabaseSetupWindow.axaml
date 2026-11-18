@@ -1,0 +1,80 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="NamiSoft.Views.DatabaseSetupWindow"
+        Title="NamiSoft · Configurar SQL Server"
+        Width="540"
+        MinHeight="500"
+        SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterScreen">
+  <Border Padding="28">
+    <StackPanel Spacing="16">
+      <StackPanel Spacing="4">
+        <TextBlock Text="Conexión a SQL Server 2022"
+                   FontSize="22"
+                   FontWeight="Bold"/>
+        <TextBlock Text="Configura el servidor y las credenciales para iniciar NamiSoft. La base de datos se creará automáticamente."
+                   TextWrapping="Wrap"
+                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+      </StackPanel>
+
+      <Border Background="#FEF2F2"
+              BorderBrush="#FECACA"
+              BorderThickness="1"
+              CornerRadius="10"
+              Padding="14"
+              IsVisible="True"
+              x:Name="ErrorBanner">
+        <TextBlock x:Name="ErrorText"
+                   TextWrapping="Wrap"
+                   Foreground="#B91C1C"
+                   FontSize="13"/>
+      </Border>
+
+      <StackPanel Spacing="6">
+        <TextBlock Text="Servidor (ej. localhost,1433)" FontWeight="SemiBold"/>
+        <TextBox x:Name="ServerBox"
+                 Text="localhost,1433"
+                 MinHeight="44"
+                 PlaceholderText="localhost,1433"/>
+      </StackPanel>
+
+      <StackPanel Spacing="6">
+        <TextBlock Text="Base de datos" FontWeight="SemiBold"/>
+        <TextBox x:Name="DatabaseBox"
+                 Text="NamiSoft"
+                 MinHeight="44"
+                 PlaceholderText="NamiSoft"/>
+      </StackPanel>
+
+      <CheckBox x:Name="WindowsAuthCheck"
+                Content="Usar autenticación integrada de Windows (sin usuario sa)"
+                IsCheckedChanged="OnAuthModeChanged"/>
+
+      <StackPanel x:Name="PasswordPanel" Spacing="6">
+        <TextBlock Text="Contraseña de sa" FontWeight="SemiBold"/>
+        <TextBox x:Name="PasswordBox"
+                 PasswordChar="•"
+                 MinHeight="44"
+                 PlaceholderText="Contraseña de SQL Server"/>
+      </StackPanel>
+
+      <TextBlock x:Name="StatusText"
+                 Text=""
+                 Foreground="{DynamicResource TextSecondaryBrush}"
+                 FontSize="13"
+                 IsVisible="False"/>
+
+      <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12" Margin="0,8,0,0">
+        <Button Grid.Column="1"
+                Content="Salir"
+                Click="OnExitClick"/>
+        <Button Grid.Column="2"
+                x:Name="ConnectButton"
+                Classes="primary"
+                Content="Probar y continuar"
+                Click="OnConnectClick"/>
+      </Grid>
+    </StackPanel>
+  </Border>
+</Window>
