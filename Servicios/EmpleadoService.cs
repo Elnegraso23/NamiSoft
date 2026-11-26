@@ -7,7 +7,12 @@ namespace NamiSoft.Servicios;
 
 public sealed class EmpleadoService
 {
-    public List<Empleado> Obtener(string filtroEstado, string busqueda)
+    public List<Empleado> Obtener(
+        string filtroEstado,
+        string busqueda,
+        string? filtroDepartamento = null,
+        string? filtroTurno = null,
+        string orden = "Número")
     {
         using var db = NominaDatabase.CreateContext();
         var query = db.Empleados.AsNoTracking().AsQueryable();
@@ -19,6 +24,17 @@ public sealed class EmpleadoService
             _ => query
         };
 
+        if (!string.IsNullOrWhiteSpace(filtroDepartamento) && filtroDepartamento != "Todos")
+        {
+            query = query.Where(e => e.Departamento == filtroDepartamento);
+        }
+
+        if (!string.IsNullOrWhiteSpace(filtroTurno) && filtroTurno != "Todos"
+            && Enum.TryParse<TipoHorario>(filtroTurno, out var tipoHorario))
+        {
+            query = query.Where(e => e.TipoHorario == tipoHorario);
+        }
+
         if (!string.IsNullOrWhiteSpace(busqueda))
         {
             var texto = busqueda.Trim().ToLower();
@@ -29,7 +45,112 @@ public sealed class EmpleadoService
                 e.Departamento.ToLower().Contains(texto));
         }
 
-        return query.OrderBy(e => e.NumeroEmpleado).ToList();
+        query = orden switch
+        {
+            "Nombre (A-Z)" => query.OrderBy(e => e.Nombre),
+            "Salario (mayor a menor)" => query.OrderByDescending(e => e.SalarioHora).ThenBy(e => e.Nombre),
+            "Salario (menor a mayor)" => query.OrderBy(e => e.SalarioHora).ThenBy(e => e.Nombre),
+            "Departamento" => query.OrderBy(e => e.Departamento).ThenBy(e => e.Nombre),
+            _ => query.OrderBy(e => e.NumeroEmpleado)
+        };
+
+        return query.ToList();
+    }
+
+    public List<string> ObtenerDepartamentos()
+    {
+        using var db = NominaDatabase.CreateContext();
+        return db.Empleados.AsNoTracking()
+            .Select(e => e.Departamento)
+            .Where(d => d != "")
+            .Distinct()
+            .OrderBy(d => d)
+            .ToList();
+    }
+
+    public string GenerarDatosPrueba()
+    {
+        using var db = NominaDatabase.CreateContext();
+
+        var muestra = new List<Empleado>
+        {
+            new() { NumeroEmpleado = "101", Nombre = "Ana Sofía Mendoza", Puesto = "Gerente de Turno", Departamento = "Administración", SalarioHora = 165m, TipoHorario = TipoHorario.Mañana, Turno = "Mañana", Descanso = "Domingo", Activo = true },
+            new() { NumeroEmpleado = "102", Nombre = "Carlos Eduardo Ruiz", Puesto = "Chef Ejecutivo", Departamento = "Cocina", SalarioHora = 150m, TipoHorario = TipoHorario.Mañana, Turno = "Mañana", Descanso = "Lunes", Activo = true },
+            new() { NumeroEmpleado = "103", Nombre = "Valeria Torres Vega", Puesto = "Cajera Principal", Departamento = "Caja", SalarioHora = 85m, TipoHorario = TipoHorario.Mañana, Turno = "Mañana", Descanso = "Martes", Activo = true },
+            new() { NumeroEmpleado = "104", Nombre = "Diego Armando López", Puesto = "Mesero", Departamento = "Piso", SalarioHora = 65m, TipoHorario = TipoHorario.Tarde, Turno = "Tarde", Descanso = "Miércoles", Activo = true },
+            new() { NumeroEmpleado = "105", Nombre = "Fernanda Castillo", Puesto = "Barista", Departamento = "Barra", SalarioHora = 78m, TipoHorario = TipoHorario.Mañana, Turno = "Mañana", Descanso = "Jueves", Activo = true },
+            new() { NumeroEmpleado = "106", Nombre = "Jorge Luis Ramírez", Puesto = "Cocinero A", Departamento = "Cocina", SalarioHora = 95m, TipoHorario = TipoHorario.Tarde, Turno = "Tarde", Descanso = "Martes", Activo = true },
+            new() { NumeroEmpleado = "107", Nombre = "Mariana Paredes", Puesto = "Hostess", Departamento = "Piso", SalarioHora = 72m, TipoHorario = TipoHorario.Tarde, Turno = "Tarde", Descanso = "Lunes", Activo = true },
+            new() { NumeroEmpleado = "108", Nombre = "Ricardo Morales", Puesto = "Bartender", Departamento = "Barra", SalarioHora = 90m, TipoHorario = TipoHorario.Especial, Turno = "Especial", Descanso = "Miércoles", Activo = true },
+            new() { NumeroEmpleado = "109", Nombre = "Lucía Hernández", Puesto = "Auxiliar de Limpieza", Departamento = "Limpieza", SalarioHora = 58m, TipoHorario = TipoHorario.Mañana, Turno = "Mañana", Descanso = "Viernes", Activo = true },
+            new() { NumeroEmpleado = "110", Nombre = "Héctor Navarro (Baja)", Puesto = "Lavaloza", Departamento = "Cocina", SalarioHora = 55m, TipoHorario = TipoHorario.Tarde, Turno = "Tarde", Descanso = "Jueves", Activo = false }
+        };
+
+        var existentes = db.Empleados.Select(e => e.NumeroEmpleado).ToHashSet();
+        var agregados = 0;
+        foreach (var emp in muestra)
+        {
+            if (existentes.Contains(emp.NumeroEmpleado))
+                continue;
+            db.Empleados.Add(emp);
+            agregados++;
+        }
+
+        db.SaveChanges();
+
+        var hoy = DateTime.Today;
+        var checadasAgregadas = 0;
+        var empleadosActivos = db.Empleados.AsNoTracking()
+            .Where(e => e.Activo && muestra.Select(m => m.NumeroEmpleado).Contains(e.NumeroEmpleado))
+            .ToList();
+
+        for (int diasAtras = 4; diasAtras >= 1; diasAtras--)
+        {
+            var fecha = hoy.AddDays(-diasAtras);
+            foreach (var emp in empleadosActivos)
+            {
+                bool yaExiste = db.Checadas.Any(c => c.NumeroEmpleado == emp.NumeroEmpleado && c.Fecha == fecha);
+                if (yaExiste)
+                    continue;
+
+                var entradaBase = emp.TipoHorario == TipoHorario.Tarde
+                    ? new TimeSpan(14, 0, 0)
+                    : new TimeSpan(8, 0, 0);
+
+                // Simular algunos retardos y una salida faltante para probar Incidencias
+                int retardoMin = (emp.NumeroEmpleado == "104" && diasAtras == 2) ? 18
+                    : (emp.NumeroEmpleado == "107" && diasAtras == 1) ? 12
+                    : 0;
+
+                var entrada = entradaBase.Add(TimeSpan.FromMinutes(retardoMin));
+                TimeSpan? salida = (emp.NumeroEmpleado == "106" && diasAtras == 1)
+                    ? null
+                    : entradaBase.Add(TimeSpan.FromHours(8));
+
+                decimal horas = salida.HasValue
+                    ? Math.Round((decimal)(salida.Value - entrada).TotalHours, 2)
+                    : 0m;
+
+                db.Checadas.Add(new ChecadaEmpleado
+                {
+                    NumeroEmpleado = emp.NumeroEmpleado,
+                    Nombre = emp.Nombre,
+                    Fecha = fecha,
+                    PrimeraChecada = entrada,
+                    UltimaChecada = salida,
+                    HorasTrabajadas = horas,
+                    RetardoMinutos = retardoMin,
+                    TieneRetardo = retardoMin > 0,
+                    Origen = OrigenChecada.Sistema,
+                    CreadaEn = DateTime.Now,
+                    Motivo = "Datos de prueba"
+                });
+                checadasAgregadas++;
+            }
+        }
+
+        db.SaveChanges();
+        return $"Se agregaron {agregados} empleados y {checadasAgregadas} checadas de prueba.";
     }
 
     public Empleado? ObtenerPorId(int id)

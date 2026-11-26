@@ -13,9 +13,22 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
     private readonly EmpleadoService _service = new();
 
     public ObservableCollection<Empleado> Employees { get; } = new();
+    public ObservableCollection<string> DepartmentFilters { get; } = new() { "Todos" };
     public IReadOnlyList<string> StatusFilters { get; } = ["Activos", "Inactivos", "Todos"];
+    public IReadOnlyList<string> ShiftFilters { get; } = ["Todos", "Mañana", "Tarde", "Personalizado", "Especial"];
+    public IReadOnlyList<string> SortOptions { get; } =
+    [
+        "Número",
+        "Nombre (A-Z)",
+        "Salario (mayor a menor)",
+        "Salario (menor a mayor)",
+        "Departamento"
+    ];
 
     [ObservableProperty] private string selectedStatusFilter = "Activos";
+    [ObservableProperty] private string selectedDepartmentFilter = "Todos";
+    [ObservableProperty] private string selectedShiftFilter = "Todos";
+    [ObservableProperty] private string selectedSortOption = "Número";
     [ObservableProperty] private string searchText = "";
     [ObservableProperty] private Empleado? selectedEmployee;
     [ObservableProperty] private bool hasEmployees;
@@ -23,13 +36,31 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
     public EmployeesViewModel(IAppDialogService dialogs) => _dialogs = dialogs;
 
     partial void OnSelectedStatusFilterChanged(string value) => Refresh();
+    partial void OnSelectedDepartmentFilterChanged(string value) => Refresh();
+    partial void OnSelectedShiftFilterChanged(string value) => Refresh();
+    partial void OnSelectedSortOptionChanged(string value) => Refresh();
     partial void OnSearchTextChanged(string value) => Refresh();
 
     public void Refresh()
     {
+        var depts = _service.ObtenerDepartamentos();
+        var currentDept = SelectedDepartmentFilter;
+        DepartmentFilters.Clear();
+        DepartmentFilters.Add("Todos");
+        foreach (var d in depts)
+            DepartmentFilters.Add(d);
+        SelectedDepartmentFilter = DepartmentFilters.Contains(currentDept) ? currentDept : "Todos";
+
         Employees.Clear();
-        foreach (var employee in _service.Obtener(SelectedStatusFilter, SearchText))
+        foreach (var employee in _service.Obtener(
+            SelectedStatusFilter,
+            SearchText,
+            SelectedDepartmentFilter,
+            SelectedShiftFilter,
+            SelectedSortOption))
+        {
             Employees.Add(employee);
+        }
         HasEmployees = Employees.Count > 0;
     }
 
@@ -111,6 +142,22 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
 
         var result = await Task.Run(() => new SincronizarChecadasPendientesService().Sincronizar());
         await _dialogs.ShowInfoAsync("Proceso terminado", result);
+        Refresh();
+    }
+
+    [RelayCommand]
+    private async Task SeedSampleDataAsync()
+    {
+        var accepted = await _dialogs.ConfirmAsync(
+            "Cargar datos de prueba",
+            "Se agregarán empleados y checadas de ejemplo (sin duplicar los ya existentes). ¿Continuar?",
+            "Cargar datos");
+
+        if (!accepted)
+            return;
+
+        var result = await Task.Run(() => _service.GenerarDatosPrueba());
+        await _dialogs.ShowInfoAsync("Datos de prueba", result);
         Refresh();
     }
 }

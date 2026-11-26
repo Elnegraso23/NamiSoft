@@ -4,16 +4,28 @@
   <Grid RowDefinitions="Auto,*" RowSpacing="16">
     <Border Classes="card">
       <StackPanel Spacing="12">
-        <Grid ColumnDefinitions="*,180" ColumnSpacing="10">
+        <Grid ColumnDefinitions="*,150,180,160,210" ColumnSpacing="10">
           <TextBox PlaceholderText="Buscar por nombre, número, puesto o departamento…"
                    Text="{Binding SearchText, Mode=TwoWay}"/>
-          <ComboBox Grid.Column="1" ItemsSource="{Binding StatusFilters}" SelectedItem="{Binding SelectedStatusFilter, Mode=TwoWay}"/>
+          <ComboBox Grid.Column="1"
+                    ItemsSource="{Binding StatusFilters}"
+                    SelectedItem="{Binding SelectedStatusFilter, Mode=TwoWay}"/>
+          <ComboBox Grid.Column="2"
+                    ItemsSource="{Binding DepartmentFilters}"
+                    SelectedItem="{Binding SelectedDepartmentFilter, Mode=TwoWay}"/>
+          <ComboBox Grid.Column="3"
+                    ItemsSource="{Binding ShiftFilters}"
+                    SelectedItem="{Binding SelectedShiftFilter, Mode=TwoWay}"/>
+          <ComboBox Grid.Column="4"
+                    ItemsSource="{Binding SortOptions}"
+                    SelectedItem="{Binding SelectedSortOption, Mode=TwoWay}"/>
         </Grid>
         <WrapPanel Orientation="Horizontal" ItemSpacing="10" LineSpacing="10">
           <Button Classes="primary" Content="Nuevo" Command="{Binding NewEmployeeCommand}"/>
           <Button Classes="ghost" Content="Editar" Command="{Binding EditEmployeeCommand}"/>
           <Button Classes="ghost" Content="Activar / desactivar" Command="{Binding ToggleActiveCommand}"/>
           <Button Classes="ghost" Content="Sincronizar" Command="{Binding SyncPendingCommand}"/>
+          <Button Classes="ghost" Content="Datos de prueba" Command="{Binding SeedSampleDataCommand}"/>
           <Button Classes="danger" Content="Eliminar" Command="{Binding DeleteEmployeeCommand}"/>
         </WrapPanel>
       </StackPanel>
